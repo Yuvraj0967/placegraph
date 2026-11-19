@@ -1,0 +1,147 @@
+-- Output of running trigger_demo against MySQL 8.4 (container placegraph-mysql)
+-- Generated 2026-11-19T06:10:40.381Z
+
+*************************** 1. row ***************************
+               Trigger: trg_applications_after_update
+              sql_mode: ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION
+SQL Original Statement: CREATE DEFINER=`root`@`localhost` TRIGGER `trg_applications_after_update` AFTER UPDATE ON `applications` FOR EACH ROW BEGIN
+    IF NEW.status = 'ACCEPTED' AND OLD.status <> 'ACCEPTED' THEN
+        INSERT INTO placements (student_id, application_id, job_id, package_lpa, placed_on)
+        SELECT NEW.student_id, NEW.application_id, NEW.job_id, j.package_lpa, CURDATE()
+        FROM   jobs j WHERE j.job_id = NEW.job_id;
+
+        UPDATE students SET is_placed = 1 WHERE student_id = NEW.student_id;
+        UPDATE jobs     SET openings = openings - 1 WHERE job_id = NEW.job_id;
+    END IF;
+
+    INSERT INTO audit_log (table_name, action, record_id, old_data, new_data)
+    VALUES ('applications',
+            IF(NEW.status = 'ACCEPTED' AND OLD.status <> 'ACCEPTED', 'PLACED', 'STATUS_CHANGE'),
+            NEW.application_id,
+            JSON_OBJECT('status', OLD.status),
+            JSON_OBJECT('status', NEW.status, 'student_id', NEW.student_id, 'job_id', NEW.job_id));
+END
+  character_set_client: latin1
+  collation_connection: latin1_swedish_ci
+    Database Collation: utf8mb4_0900_ai_ci
+               Created: 2026-11-19 06:10:39.09
++----------------+------------+--------+---------+
+| application_id | student_id | job_id | status  |
++----------------+------------+--------+---------+
+|             10 |          4 |      3 | OFFERED |
++----------------+------------+--------+---------+
++------------+------------+-----------+
+| student_id | name       | is_placed |
++------------+------------+-----------+
+|          4 | Sneha Iyer |         0 |
++------------+------------+-----------+
++--------+--------------+----------+
+| job_id | title        | openings |
++--------+--------------+----------+
+|      3 | Data Analyst |        2 |
++--------+--------------+----------+
++----------------+------------+--------+----------+
+| application_id | student_id | job_id | status   |
++----------------+------------+--------+----------+
+|             10 |          4 |      3 | ACCEPTED |
++----------------+------------+--------+----------+
++------------+------------+-----------+
+| student_id | name       | is_placed |
++------------+------------+-----------+
+|          4 | Sneha Iyer |         1 |
++------------+------------+-----------+
++--------+--------------+----------+
+| job_id | title        | openings |
++--------+--------------+----------+
+|      3 | Data Analyst |        1 |
++--------+--------------+----------+
++------------+----------------+--------+-------------+------------+
+| student_id | application_id | job_id | package_lpa | placed_on  |
++------------+----------------+--------+-------------+------------+
+|          4 |             10 |      3 |        9.00 | 2026-11-19 |
++------------+----------------+--------+-------------+------------+
++----------+--------------+--------+-----------+---------------------------------------------------------------+
+| audit_id | table_name   | action | record_id | new_data                                                      |
++----------+--------------+--------+-----------+---------------------------------------------------------------+
+|        3 | applications | PLACED | 10        | {"job_id": 3, "status": "ACCEPTED", "student_id": 4}          |
+|        2 | jobs         | UPDATE | 3         | {"title": "Data Analyst", "openings": 1, "package_lpa": 9.00} |
+|        1 | students     | UPDATE | 4         | {"cgpa": 7.60, "name": "Sneha Iyer", "is_placed": 1}          |
++----------+--------------+--------+-----------+---------------------------------------------------------------+
+*************************** 1. row ***************************
+               Trigger: trg_rounds_after_update
+              sql_mode: ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION
+SQL Original Statement: CREATE DEFINER=`root`@`localhost` TRIGGER `trg_rounds_after_update` AFTER UPDATE ON `interview_rounds` FOR EACH ROW BEGIN
+    IF NEW.result = 'FAILED' AND OLD.result <> 'FAILED' THEN
+        UPDATE applications SET status = 'REJECTED'
+        WHERE  application_id = NEW.application_id AND status IN ('APPLIED','SHORTLISTED','INTERVIEW');
+    END IF;
+
+    INSERT INTO audit_log (table_name, action, record_id, old_data, new_data)
+    VALUES ('interview_rounds', 'RESULT', CONCAT(NEW.application_id, '-', NEW.round_no),
+            JSON_OBJECT('result', OLD.result), JSON_OBJECT('result', NEW.result));
+END
+  character_set_client: latin1
+  collation_connection: latin1_swedish_ci
+    Database Collation: utf8mb4_0900_ai_ci
+               Created: 2026-11-19 06:10:39.12
++----------------+-----------+
+| application_id | status    |
++----------------+-----------+
+|             11 | INTERVIEW |
++----------------+-----------+
++----------------+----------+------------+--------------+---------+
+| application_id | round_no | round_type | scheduled_on | result  |
++----------------+----------+------------+--------------+---------+
+|             11 |        1 | APTITUDE   | 2026-11-22   | PENDING |
++----------------+----------+------------+--------------+---------+
++----------------+----------+
+| application_id | status   |
++----------------+----------+
+|             11 | REJECTED |
++----------------+----------+
++----------------+----------+------------+--------------+--------+
+| application_id | round_no | round_type | scheduled_on | result |
++----------------+----------+------------+--------------+--------+
+|             11 |        1 | APTITUDE   | 2026-11-22   | FAILED |
++----------------+----------+------------+--------------+--------+
++----------+------------------+---------------+-----------+---------------------------------------------------------------+---------------------------------------------------------------+
+| audit_id | table_name       | action        | record_id | old_data                                                      | new_data                                                      |
++----------+------------------+---------------+-----------+---------------------------------------------------------------+---------------------------------------------------------------+
+|        5 | interview_rounds | RESULT        | 11-1      | {"result": "PENDING"}                                         | {"result": "FAILED"}                                          |
+|        4 | applications     | STATUS_CHANGE | 11        | {"status": "INTERVIEW"}                                       | {"job_id": 5, "status": "REJECTED", "student_id": 5}          |
+|        3 | applications     | PLACED        | 10        | {"status": "OFFERED"}                                         | {"job_id": 3, "status": "ACCEPTED", "student_id": 4}          |
+|        2 | jobs             | UPDATE        | 3         | {"title": "Data Analyst", "openings": 2, "package_lpa": 9.00} | {"title": "Data Analyst", "openings": 1, "package_lpa": 9.00} |
++----------+------------------+---------------+-----------+---------------------------------------------------------------+---------------------------------------------------------------+
+*************************** 1. row ***************************
+               Trigger: trg_students_after_update
+              sql_mode: ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION
+SQL Original Statement: CREATE DEFINER=`root`@`localhost` TRIGGER `trg_students_after_update` AFTER UPDATE ON `students` FOR EACH ROW BEGIN
+    INSERT INTO audit_log (table_name, action, record_id, old_data, new_data)
+    VALUES ('students', 'UPDATE', NEW.student_id,
+            JSON_OBJECT('name', OLD.name, 'cgpa', OLD.cgpa, 'is_placed', OLD.is_placed),
+            JSON_OBJECT('name', NEW.name, 'cgpa', NEW.cgpa, 'is_placed', NEW.is_placed));
+END
+  character_set_client: latin1
+  collation_connection: latin1_swedish_ci
+    Database Collation: utf8mb4_0900_ai_ci
+               Created: 2026-11-19 06:10:39.13
++------------+------------+------+
+| student_id | name       | cgpa |
++------------+------------+------+
+|          9 | Vikram Rao | 6.50 |
++------------+------------+------+
++------------+------------+------+
+| student_id | name       | cgpa |
++------------+------------+------+
+|          9 | Vikram Rao | 6.90 |
++------------+------------+------+
++----------+------------+--------+-----------+------------------------------------------------------+------------------------------------------------------+---------------------+
+| audit_id | table_name | action | record_id | old_data                                             | new_data                                             | changed_at          |
++----------+------------+--------+-----------+------------------------------------------------------+------------------------------------------------------+---------------------+
+|        6 | students   | UPDATE | 9         | {"cgpa": 6.50, "name": "Vikram Rao", "is_placed": 0} | {"cgpa": 6.90, "name": "Vikram Rao", "is_placed": 0} | 2026-11-19 06:10:40 |
++----------+------------+--------+-----------+------------------------------------------------------+------------------------------------------------------+---------------------+
+
+-- messages --
+ERROR 1644 (45000) at line 36: Student is already placed and cannot apply again
+ERROR 1644 (45000) at line 39: Not eligible: CGPA is below the minimum required for this job
+ERROR 1644 (45000) at line 42: Only an application with an OFFER can be accepted

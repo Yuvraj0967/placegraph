@@ -1,0 +1,102 @@
+-- Output of running procedure_demo against MySQL 8.4 (container placegraph-mysql)
+-- Generated 2026-11-19T06:10:43.968Z
+
+*************************** 1. row ***************************
+           Procedure: sp_accept_offer
+            sql_mode: ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION
+    Create Procedure: CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_accept_offer`(IN p_app_id INT)
+BEGIN
+    DECLARE v_student INT;
+    DECLARE v_status  VARCHAR(20);
+
+    SELECT student_id, status INTO v_student, v_status FROM applications WHERE application_id = p_app_id;
+    IF v_status IS NULL THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Application does not exist';
+    END IF;
+    IF v_status <> 'OFFERED' THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Only an application with an OFFER can be accepted';
+    END IF;
+
+    UPDATE applications SET status = 'ACCEPTED' WHERE application_id = p_app_id;
+
+    UPDATE applications
+    SET    status = 'WITHDRAWN'
+    WHERE  student_id = v_student
+      AND  application_id <> p_app_id
+      AND  status IN ('APPLIED','SHORTLISTED','INTERVIEW','OFFERED');
+END
+character_set_client: latin1
+collation_connection: latin1_swedish_ci
+  Database Collation: utf8mb4_0900_ai_ci
++----------------+------------+--------+------------+-----------+
+| application_id | student_id | job_id | applied_on | status    |
++----------------+------------+--------+------------+-----------+
+|             11 |          5 |      5 | 2026-11-10 | INTERVIEW |
++----------------+------------+--------+------------+-----------+
++--------------------+
+| new_application_id |
++--------------------+
+|                 22 |
++--------------------+
++----------------+------------+--------+------------+-----------+
+| application_id | student_id | job_id | applied_on | status    |
++----------------+------------+--------+------------+-----------+
+|             22 |          5 |      2 | 2026-11-19 | APPLIED   |
+|             11 |          5 |      5 | 2026-11-10 | INTERVIEW |
++----------------+------------+--------+------------+-----------+
++----------------+-------------+
+| application_id | status      |
++----------------+-------------+
+|             22 | SHORTLISTED |
++----------------+-------------+
++------------------+
+| round_no_created |
++------------------+
+|                1 |
++------------------+
++----------------+----------+------------+--------------+---------+
+| application_id | round_no | round_type | scheduled_on | result  |
++----------------+----------+------------+--------------+---------+
+|             22 |        1 | APTITUDE   | 2026-11-24   | PENDING |
++----------------+----------+------------+--------------+---------+
++----------------+-----------+
+| application_id | status    |
++----------------+-----------+
+|             22 | INTERVIEW |
++----------------+-----------+
++----------------+------------+--------+---------+
+| application_id | student_id | job_id | status  |
++----------------+------------+--------+---------+
+|             18 |         11 |      1 | APPLIED |
+|             17 |         11 |      3 | OFFERED |
++----------------+------------+--------+---------+
++----------------+------------+--------+-----------+
+| application_id | student_id | job_id | status    |
++----------------+------------+--------+-----------+
+|             18 |         11 |      1 | WITHDRAWN |
+|             17 |         11 |      3 | ACCEPTED  |
++----------------+------------+--------+-----------+
++------------+----------------+--------+-------------+------------+
+| student_id | application_id | job_id | package_lpa | placed_on  |
++------------+----------------+--------+-------------+------------+
+|         11 |             17 |      3 |        9.00 | 2026-11-19 |
++------------+----------------+--------+-------------+------------+
++------------+-------------+------+------+--------------+----------------+-----------+-------------+
+| student_id | name        | dept | cgpa | applications | pending_offers | is_placed | package_lpa |
++------------+-------------+------+------+--------------+----------------+-----------+-------------+
+|          3 | Rohan Mehta | IT   | 8.10 |            2 |              1 |         0 |        NULL |
++------------+-------------+------+------+--------------+----------------+-----------+-------------+
++------+----------------------------------+----------------+--------+---------------+-----------------+
+| code | name                             | total_students | placed | placement_pct | avg_package_lpa |
++------+----------------------------------+----------------+--------+---------------+-----------------+
+| CSE  | Computer Science and Engineering |              4 |      2 |          50.0 |           15.00 |
+| IT   | Information Technology           |              3 |      1 |          33.3 |            9.00 |
+| ECE  | Electronics and Communication    |              3 |      1 |          33.3 |            8.00 |
+| MECH | Mechanical Engineering           |              2 |      1 |          50.0 |            7.50 |
+| ALL  | All departments                  |             12 |      5 |          41.7 |           10.90 |
++------+----------------------------------+----------------+--------+---------------+-----------------+
+
+-- messages --
+ERROR 1644 (45000) at line 15: The student has already applied for this job
+ERROR 1644 (45000) at line 18: An offer can only be made after the interview stage
+ERROR 1644 (45000) at line 27: The previous round is not PASSED yet

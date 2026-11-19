@@ -1,0 +1,46 @@
+PlaceGraph test run - 2026-11-19T06:11:03.657Z
+node v24.13.0 on win32
+Data was reset first with "npm run db:setup" (exit 0).
+
+✔ FOREIGN KEY RESTRICT: a company that has jobs cannot be deleted (108.3953ms)
+✔ UNIQUE: duplicate student email is rejected (8.0373ms)
+✔ CHECK: CGPA above 10 is rejected (6.3557ms)
+✔ trigger: eligibility guard rejects a CGPA below the job minimum (5.7906ms)
+✔ trigger: eligibility guard rejects an expired deadline (8.3426ms)
+✔ trigger: a placed student cannot apply again (7.0158ms)
+✔ trigger: only an OFFERED application can be accepted (4.4942ms)
+✔ trigger: accepting an offer creates the placement, marks the student placed and uses an opening (18.8465ms)
+✔ trigger: a FAILED interview round rejects the application (10.9756ms)
+✔ trigger: audit row written when a student is updated (old and new values) (8.2051ms)
+✔ trigger: a student account must be linked to a student record (4.9203ms)
+✔ procedure sp_apply: duplicate application is rejected, new one returns its id (15.2238ms)
+✔ procedure sp_update_application_status: offer needs passed interview rounds (6.9064ms)
+✔ procedure sp_schedule_round: generates round_no and moves the application to INTERVIEW (12.1459ms)
+✔ procedure sp_accept_offer: places the student and withdraws their other open applications (11.2926ms)
+✔ views: v_placement_summary has one row per department (6.5257ms)
+✔ full-text search: MATCH ... AGAINST finds jobs by title (4.3891ms)
+✔ transaction: a failed multi-statement unit leaves no partial rows (9.4153ms)
+✔ a perfect CGPA of 10.00 can be stored (regression: DECIMAL(3,2) topped out at 9.99) (6.9703ms)
+✔ requests without a session get 401 (275.4878ms)
+✔ login: wrong password is rejected, right password sets a session (813.7645ms)
+✔ roles: a student gets 403 on officer-only endpoints (383.1933ms)
+✔ roles: a student only sees their own applications and student row (258.9663ms)
+✔ roles: an officer sees everything (433.2049ms)
+✔ student CRUD lifecycle (officer): create, read, update, search, delete (1267.1788ms)
+✔ validation: missing fields and duplicates are rejected with readable 4xx errors (331.5398ms)
+✔ workflow: the database rules surface as 400 errors through the API (319.2145ms)
+✔ search and filters (397.5854ms)
+✔ a student can apply, but only as themselves, and is then blocked from applying twice (1553.6804ms)
+✔ MySQL and Neo4j are in sync (424.2719ms)
+✔ a student created through the API appears in Neo4j with department and skills, then disappears on delete (992.227ms)
+✔ accepting an offer through the API adds a PLACED_AT edge in Neo4j (961.548ms)
+✔ recommendations: skill-match ranking with missing skills (Cypher traversal + aggregation) (283.3484ms)
+✔ variable-length path: shortest path between two students exists (7.8276ms)
+ℹ tests 34
+ℹ suites 0
+ℹ pass 34
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 10577.3368

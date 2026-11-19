@@ -1,0 +1,252 @@
+-- Output of running create_tables against MySQL 8.4 (container placegraph-mysql)
+-- Generated 2026-11-19T06:10:28.077Z
+
++----------------------+
+| Tables_in_placegraph |
++----------------------+
+| applications         |
+| audit_log            |
+| companies            |
+| departments          |
+| interview_rounds     |
+| job_skills           |
+| jobs                 |
+| placements           |
+| skills               |
+| student_skills       |
+| students             |
+| users                |
+| v_job_pipeline       |
+| v_placement_summary  |
++----------------------+
+*************************** 1. row ***************************
+       Table: departments
+Create Table: CREATE TABLE `departments` (
+  `dept_id` int NOT NULL AUTO_INCREMENT,
+  `code` varchar(10) NOT NULL,
+  `name` varchar(80) NOT NULL,
+  PRIMARY KEY (`dept_id`),
+  UNIQUE KEY `uq_departments_code` (`code`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
++---------+-------------+------+-----+---------+----------------+
+| Field   | Type        | Null | Key | Default | Extra          |
++---------+-------------+------+-----+---------+----------------+
+| dept_id | int         | NO   | PRI | NULL    | auto_increment |
+| code    | varchar(10) | NO   | UNI | NULL    |                |
+| name    | varchar(80) | NO   |     | NULL    |                |
++---------+-------------+------+-----+---------+----------------+
+*************************** 1. row ***************************
+       Table: students
+Create Table: CREATE TABLE `students` (
+  `student_id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) NOT NULL,
+  `email` varchar(120) NOT NULL,
+  `dept_id` int NOT NULL,
+  `cgpa` decimal(4,2) NOT NULL,
+  `grad_year` smallint NOT NULL,
+  `is_placed` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`student_id`),
+  UNIQUE KEY `uq_students_email` (`email`),
+  KEY `fk_students_dept` (`dept_id`),
+  KEY `idx_students_cgpa` (`cgpa`),
+  FULLTEXT KEY `ft_students_text` (`name`,`email`),
+  CONSTRAINT `fk_students_dept` FOREIGN KEY (`dept_id`) REFERENCES `departments` (`dept_id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT `chk_students_cgpa` CHECK ((`cgpa` between 0 and 10)),
+  CONSTRAINT `chk_students_year` CHECK ((`grad_year` between 2000 and 2100))
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
++------------+--------------+------+-----+---------+----------------+
+| Field      | Type         | Null | Key | Default | Extra          |
++------------+--------------+------+-----+---------+----------------+
+| student_id | int          | NO   | PRI | NULL    | auto_increment |
+| name       | varchar(100) | NO   | MUL | NULL    |                |
+| email      | varchar(120) | NO   | UNI | NULL    |                |
+| dept_id    | int          | NO   | MUL | NULL    |                |
+| cgpa       | decimal(4,2) | NO   | MUL | NULL    |                |
+| grad_year  | smallint     | NO   |     | NULL    |                |
+| is_placed  | tinyint(1)   | NO   |     | 0       |                |
++------------+--------------+------+-----+---------+----------------+
+*************************** 1. row ***************************
+       Table: companies
+Create Table: CREATE TABLE `companies` (
+  `company_id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) NOT NULL,
+  `industry` varchar(60) DEFAULT NULL,
+  `location` varchar(60) DEFAULT NULL,
+  PRIMARY KEY (`company_id`),
+  UNIQUE KEY `uq_companies_name` (`name`),
+  FULLTEXT KEY `ft_companies_text` (`name`,`industry`,`location`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
++------------+--------------+------+-----+---------+----------------+
+| Field      | Type         | Null | Key | Default | Extra          |
++------------+--------------+------+-----+---------+----------------+
+| company_id | int          | NO   | PRI | NULL    | auto_increment |
+| name       | varchar(100) | NO   | UNI | NULL    |                |
+| industry   | varchar(60)  | YES  |     | NULL    |                |
+| location   | varchar(60)  | YES  |     | NULL    |                |
++------------+--------------+------+-----+---------+----------------+
+*************************** 1. row ***************************
+       Table: jobs
+Create Table: CREATE TABLE `jobs` (
+  `job_id` int NOT NULL AUTO_INCREMENT,
+  `company_id` int NOT NULL,
+  `title` varchar(100) NOT NULL,
+  `package_lpa` decimal(5,2) NOT NULL,
+  `min_cgpa` decimal(4,2) NOT NULL DEFAULT '0.00',
+  `openings` int NOT NULL DEFAULT '1',
+  `deadline` date NOT NULL,
+  PRIMARY KEY (`job_id`),
+  KEY `fk_jobs_company` (`company_id`),
+  KEY `idx_jobs_deadline` (`deadline`),
+  FULLTEXT KEY `ft_jobs_title` (`title`),
+  CONSTRAINT `fk_jobs_company` FOREIGN KEY (`company_id`) REFERENCES `companies` (`company_id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT `chk_jobs_open` CHECK ((`openings` >= 0)),
+  CONSTRAINT `chk_jobs_package` CHECK ((`package_lpa` > 0))
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
++-------------+--------------+------+-----+---------+----------------+
+| Field       | Type         | Null | Key | Default | Extra          |
++-------------+--------------+------+-----+---------+----------------+
+| job_id      | int          | NO   | PRI | NULL    | auto_increment |
+| company_id  | int          | NO   | MUL | NULL    |                |
+| title       | varchar(100) | NO   | MUL | NULL    |                |
+| package_lpa | decimal(5,2) | NO   |     | NULL    |                |
+| min_cgpa    | decimal(4,2) | NO   |     | 0.00    |                |
+| openings    | int          | NO   |     | 1       |                |
+| deadline    | date         | NO   | MUL | NULL    |                |
++-------------+--------------+------+-----+---------+----------------+
+*************************** 1. row ***************************
+       Table: skills
+Create Table: CREATE TABLE `skills` (
+  `skill_id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(60) NOT NULL,
+  PRIMARY KEY (`skill_id`),
+  UNIQUE KEY `uq_skills_name` (`name`)
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
++----------+-------------+------+-----+---------+----------------+
+| Field    | Type        | Null | Key | Default | Extra          |
++----------+-------------+------+-----+---------+----------------+
+| skill_id | int         | NO   | PRI | NULL    | auto_increment |
+| name     | varchar(60) | NO   | UNI | NULL    |                |
++----------+-------------+------+-----+---------+----------------+
+*************************** 1. row ***************************
+       Table: student_skills
+Create Table: CREATE TABLE `student_skills` (
+  `student_id` int NOT NULL,
+  `skill_id` int NOT NULL,
+  PRIMARY KEY (`student_id`,`skill_id`),
+  KEY `fk_ss_skill` (`skill_id`),
+  CONSTRAINT `fk_ss_skill` FOREIGN KEY (`skill_id`) REFERENCES `skills` (`skill_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_ss_student` FOREIGN KEY (`student_id`) REFERENCES `students` (`student_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
++------------+------+------+-----+---------+-------+
+| Field      | Type | Null | Key | Default | Extra |
++------------+------+------+-----+---------+-------+
+| student_id | int  | NO   | PRI | NULL    |       |
+| skill_id   | int  | NO   | PRI | NULL    |       |
++------------+------+------+-----+---------+-------+
+*************************** 1. row ***************************
+       Table: job_skills
+Create Table: CREATE TABLE `job_skills` (
+  `job_id` int NOT NULL,
+  `skill_id` int NOT NULL,
+  PRIMARY KEY (`job_id`,`skill_id`),
+  KEY `fk_js_skill` (`skill_id`),
+  CONSTRAINT `fk_js_job` FOREIGN KEY (`job_id`) REFERENCES `jobs` (`job_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_js_skill` FOREIGN KEY (`skill_id`) REFERENCES `skills` (`skill_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
++----------+------+------+-----+---------+-------+
+| Field    | Type | Null | Key | Default | Extra |
++----------+------+------+-----+---------+-------+
+| job_id   | int  | NO   | PRI | NULL    |       |
+| skill_id | int  | NO   | PRI | NULL    |       |
++----------+------+------+-----+---------+-------+
+*************************** 1. row ***************************
+       Table: applications
+Create Table: CREATE TABLE `applications` (
+  `application_id` int NOT NULL AUTO_INCREMENT,
+  `student_id` int NOT NULL,
+  `job_id` int NOT NULL,
+  `applied_on` date NOT NULL DEFAULT (curdate()),
+  `status` enum('APPLIED','SHORTLISTED','INTERVIEW','OFFERED','ACCEPTED','REJECTED','WITHDRAWN') NOT NULL DEFAULT 'APPLIED',
+  PRIMARY KEY (`application_id`),
+  UNIQUE KEY `uq_applications_pair` (`student_id`,`job_id`),
+  KEY `fk_app_job` (`job_id`),
+  KEY `idx_app_status` (`status`),
+  CONSTRAINT `fk_app_job` FOREIGN KEY (`job_id`) REFERENCES `jobs` (`job_id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT `fk_app_student` FOREIGN KEY (`student_id`) REFERENCES `students` (`student_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
++----------------+---------------------------------------------------------------------------------------+------+-----+-----------+-------------------+
+| Field          | Type                                                                                  | Null | Key | Default   | Extra             |
++----------------+---------------------------------------------------------------------------------------+------+-----+-----------+-------------------+
+| application_id | int                                                                                   | NO   | PRI | NULL      | auto_increment    |
+| student_id     | int                                                                                   | NO   | MUL | NULL      |                   |
+| job_id         | int                                                                                   | NO   | MUL | NULL      |                   |
+| applied_on     | date                                                                                  | NO   |     | curdate() | DEFAULT_GENERATED |
+| status         | enum('APPLIED','SHORTLISTED','INTERVIEW','OFFERED','ACCEPTED','REJECTED','WITHDRAWN') | NO   | MUL | APPLIED   |                   |
++----------------+---------------------------------------------------------------------------------------+------+-----+-----------+-------------------+
+*************************** 1. row ***************************
+       Table: interview_rounds
+Create Table: CREATE TABLE `interview_rounds` (
+  `application_id` int NOT NULL,
+  `round_no` int NOT NULL,
+  `round_type` enum('APTITUDE','TECHNICAL','HR') NOT NULL,
+  `scheduled_on` date NOT NULL,
+  `result` enum('PENDING','PASSED','FAILED') NOT NULL DEFAULT 'PENDING',
+  PRIMARY KEY (`application_id`,`round_no`),
+  CONSTRAINT `fk_rounds_application` FOREIGN KEY (`application_id`) REFERENCES `applications` (`application_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
++----------------+-----------------------------------+------+-----+---------+-------+
+| Field          | Type                              | Null | Key | Default | Extra |
++----------------+-----------------------------------+------+-----+---------+-------+
+| application_id | int                               | NO   | PRI | NULL    |       |
+| round_no       | int                               | NO   | PRI | NULL    |       |
+| round_type     | enum('APTITUDE','TECHNICAL','HR') | NO   |     | NULL    |       |
+| scheduled_on   | date                              | NO   |     | NULL    |       |
+| result         | enum('PENDING','PASSED','FAILED') | NO   |     | PENDING |       |
++----------------+-----------------------------------+------+-----+---------+-------+
+*************************** 1. row ***************************
+       Table: placements
+Create Table: CREATE TABLE `placements` (
+  `student_id` int NOT NULL,
+  `application_id` int NOT NULL,
+  `job_id` int NOT NULL,
+  `package_lpa` decimal(5,2) NOT NULL,
+  `placed_on` date NOT NULL,
+  PRIMARY KEY (`student_id`),
+  UNIQUE KEY `uq_placements_application` (`application_id`),
+  KEY `fk_pl_job` (`job_id`),
+  CONSTRAINT `fk_pl_application` FOREIGN KEY (`application_id`) REFERENCES `applications` (`application_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_pl_job` FOREIGN KEY (`job_id`) REFERENCES `jobs` (`job_id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT `fk_pl_student` FOREIGN KEY (`student_id`) REFERENCES `students` (`student_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
++----------------+--------------+------+-----+---------+-------+
+| Field          | Type         | Null | Key | Default | Extra |
++----------------+--------------+------+-----+---------+-------+
+| student_id     | int          | NO   | PRI | NULL    |       |
+| application_id | int          | NO   | UNI | NULL    |       |
+| job_id         | int          | NO   | MUL | NULL    |       |
+| package_lpa    | decimal(5,2) | NO   |     | NULL    |       |
+| placed_on      | date         | NO   |     | NULL    |       |
++----------------+--------------+------+-----+---------+-------+
+*************************** 1. row ***************************
+       Table: audit_log
+Create Table: CREATE TABLE `audit_log` (
+  `audit_id` bigint NOT NULL AUTO_INCREMENT,
+  `table_name` varchar(40) NOT NULL,
+  `action` varchar(20) NOT NULL,
+  `record_id` varchar(40) NOT NULL,
+  `old_data` json DEFAULT NULL,
+  `new_data` json DEFAULT NULL,
+  `changed_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`audit_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
++------------+-------------+------+-----+-------------------+-------------------+
+| Field      | Type        | Null | Key | Default           | Extra             |
++------------+-------------+------+-----+-------------------+-------------------+
+| audit_id   | bigint      | NO   | PRI | NULL              | auto_increment    |
+| table_name | varchar(40) | NO   |     | NULL              |                   |
+| action     | varchar(20) | NO   |     | NULL              |                   |
+| record_id  | varchar(40) | NO   |     | NULL              |                   |
+| old_data   | json        | YES  |     | NULL              |                   |
+| new_data   | json        | YES  |     | NULL              |                   |
+| changed_at | timestamp   | NO   |     | CURRENT_TIMESTAMP | DEFAULT_GENERATED |
++------------+-------------+------+-----+-------------------+-------------------+

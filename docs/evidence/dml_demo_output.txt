@@ -1,0 +1,70 @@
+-- Output of running dml_demo against MySQL 8.4 (container placegraph-mysql)
+-- Generated 2026-11-19T06:10:32.324Z
+
++------------+------------+-------------+-----------+
+| company_id | name       | industry    | location  |
++------------+------------+-------------+-----------+
+|          1 | TechNova   | IT Services | Bengaluru |
+|          2 | DataWorks  | Analytics   | Pune      |
+|          3 | CircuitPro | Electronics | Hyderabad |
+|          4 | AutoDrive  | Automotive  | Chennai   |
+|          5 | CloudNine  | Cloud       | Gurugram  |
++------------+------------+-------------+-----------+
++------------+--------------+------+
+| student_id | name         | cgpa |
++------------+--------------+------+
+|         10 | Isha Gupta   | 9.50 |
+|          2 | Diya Patel   | 9.20 |
+|          1 | Aarav Sharma | 8.90 |
+|         11 | Neha Verma   | 8.70 |
++------------+--------------+------+
++--------------+-------------------+------------+-------------+
+| student      | job               | company    | status      |
++--------------+-------------------+------------+-------------+
+| Aarav Sharma | Software Engineer | TechNova   | APPLIED     |
+| Aarav Sharma | ML Engineer       | DataWorks  | INTERVIEW   |
+| Aarav Sharma | Cloud Engineer    | CloudNine  | APPLIED     |
+| Diya Patel   | Software Engineer | TechNova   | ACCEPTED    |
+| Diya Patel   | ML Engineer       | DataWorks  | WITHDRAWN   |
+| Diya Patel   | Cloud Engineer    | CloudNine  | WITHDRAWN   |
+| Rohan Mehta  | Software Engineer | TechNova   | OFFERED     |
+| Rohan Mehta  | Data Analyst      | DataWorks  | REJECTED    |
+| Sneha Iyer   | QA Engineer       | TechNova   | APPLIED     |
+| Sneha Iyer   | Data Analyst      | DataWorks  | OFFERED     |
+| Kabir Singh  | Embedded Engineer | CircuitPro | INTERVIEW   |
+| Meera Nair   | Embedded Engineer | CircuitPro | REJECTED    |
+| Ananya Das   | Design Engineer   | AutoDrive  | ACCEPTED    |
+| Isha Gupta   | ML Engineer       | DataWorks  | ACCEPTED    |
+| Isha Gupta   | Cloud Engineer    | CloudNine  | WITHDRAWN   |
+| Isha Gupta   | Software Engineer | TechNova   | WITHDRAWN   |
+| Neha Verma   | Data Analyst      | DataWorks  | OFFERED     |
+| Neha Verma   | Software Engineer | TechNova   | APPLIED     |
+| Rahul Jain   | Embedded Engineer | CircuitPro | ACCEPTED    |
+| Arjun Reddy  | QA Engineer       | TechNova   | APPLIED     |
+| Vikram Rao   | Design Engineer   | AutoDrive  | SHORTLISTED |
++--------------+-------------------+------------+-------------+
++------+----------+--------+
+| code | students | placed |
++------+----------+--------+
+| CSE  |        4 |      2 |
+| ECE  |        3 |      1 |
+| MECH |        2 |      1 |
+| IT   |        3 |      0 |
++------+----------+--------+
++------------+-----------+------------+----------+
+| company_id | name      | industry   | location |
++------------+-----------+------------+----------+
+|          6 | Demo Corp | Consulting | Mumbai   |
++------------+-----------+------------+----------+
++--------+------------------+-------------+----------+
+| job_id | title            | package_lpa | openings |
++--------+------------------+-------------+----------+
+|      9 | Business Analyst |       11.50 |        3 |
++--------+------------------+-------------+----------+
++----------+------------+--------+-----------+--------------------------------------------------------------------+-------------------------------------------------------------------------------------+---------------------+
+| audit_id | table_name | action | record_id | old_data                                                           | new_data                                                                            | changed_at          |
++----------+------------+--------+-----------+--------------------------------------------------------------------+-------------------------------------------------------------------------------------+---------------------+
+|        3 | jobs       | DELETE | 9         | {"title": "Business Analyst", "company_id": 6}                     | NULL                                                                                | 2026-11-19 06:10:32 |
+|        2 | jobs       | UPDATE | 9         | {"title": "Business Analyst", "openings": 2, "package_lpa": 10.00} | {"title": "Business Analyst", "openings": 3, "package_lpa": 11.50}                  | 2026-11-19 06:10:32 |
+|        1 | jobs       | INSERT | 9         | NULL                                                               | {"title": "Business Analyst", "openings": 2, "company_id": 6, "package_lpa": 10.00} | 2026-11-19 06:10:32 |
++----------+------------+--------+-----------+--------------------------------------------------------------------+-------------------------------------------------------------------------------------+---------------------+

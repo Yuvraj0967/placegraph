@@ -1,0 +1,195 @@
+=== CRUD THROUGH THE WEBSITE, VERIFIED IN THE DATABASE ===
+
+### BEFORE: students table (latest 3)
+mysql> SELECT student_id, name, email, cgpa, is_placed FROM students ORDER BY student_id DESC LIMIT 3
++------------+------------+-------------------+------+-----------+
+| student_id | name       | email             | cgpa | is_placed |
++------------+------------+-------------------+------+-----------+
+|         12 | Rahul Jain | rahul@college.edu | 7.80 |         1 |
+|         11 | Neha Verma | neha@college.edu  | 8.70 |         0 |
+|         10 | Isha Gupta | isha@college.edu  | 9.50 |         1 |
++------------+------------+-------------------+------+-----------+
+
+Neo4j Student nodes before: [{"students":12}]
+
+### AFTER CREATE: row exists in MySQL
+mysql> SELECT student_id, name, email, dept_id, cgpa, is_placed FROM students WHERE email = 'demo.student@college.edu'
++------------+--------------+--------------------------+---------+------+-----------+
+| student_id | name         | email                    | dept_id | cgpa | is_placed |
++------------+--------------+--------------------------+---------+------+-----------+
+|         13 | Demo Student | demo.student@college.edu |       1 | 8.20 |         0 |
++------------+--------------+--------------------------+---------+------+-----------+
+
+
+### AFTER CREATE: its skills (M:N link rows)
+mysql> SELECT * FROM student_skills WHERE student_id = (SELECT student_id FROM students WHERE email='demo.student@college.edu')
++------------+----------+
+| student_id | skill_id |
++------------+----------+
+|         13 |        1 |
+|         13 |        3 |
++------------+----------+
+
+
+### AFTER CREATE: trigger wrote an audit row
+mysql> SELECT audit_id, table_name, action, record_id, new_data FROM audit_log ORDER BY audit_id DESC LIMIT 1
++----------+------------+--------+-----------+-----------------------------------------------------------------------------+
+| audit_id | table_name | action | record_id | new_data                                                                    |
++----------+------------+--------+-----------+-----------------------------------------------------------------------------+
+|        1 | students   | INSERT | 13        | {"cgpa": 8.20, "name": "Demo Student", "email": "demo.student@college.edu"} |
++----------+------------+--------+-----------+-----------------------------------------------------------------------------+
+
+Neo4j after create: [{"student":"Demo Student","skills":["Python","SQL"]}]
+
+### AFTER UPDATE: MySQL has the new CGPA
+mysql> SELECT student_id, name, cgpa FROM students WHERE email = 'demo.student@college.edu'
++------------+--------------+------+
+| student_id | name         | cgpa |
++------------+--------------+------+
+|         13 | Demo Student | 8.90 |
++------------+--------------+------+
+
+
+### AFTER UPDATE: trigger stored old vs new
+mysql> SELECT action, old_data, new_data FROM audit_log WHERE table_name='students' ORDER BY audit_id DESC LIMIT 1
++--------+--------------------------------------------------------+--------------------------------------------------------+
+| action | old_data                                               | new_data                                               |
++--------+--------------------------------------------------------+--------------------------------------------------------+
+| UPDATE | {"cgpa": 8.20, "name": "Demo Student", "is_placed": 0} | {"cgpa": 8.90, "name": "Demo Student", "is_placed": 0} |
++--------+--------------------------------------------------------+--------------------------------------------------------+
+
+Neo4j after update: [{"cgpa":8.9}]
+
+### AFTER DELETE: student is gone from MySQL
+mysql> SELECT COUNT(*) AS rows_with_that_email FROM students WHERE email = 'demo.student@college.edu'
++----------------------+
+| rows_with_that_email |
++----------------------+
+|                    0 |
++----------------------+
+
+
+### AFTER DELETE: skill links were cascade-deleted
+mysql> SELECT COUNT(*) AS orphan_links FROM student_skills WHERE student_id NOT IN (SELECT student_id FROM students)
++--------------+
+| orphan_links |
++--------------+
+|            0 |
++--------------+
+
+Neo4j after delete: [{"nodes":0}]
+
+### AFTER APPLY: new application row
+mysql> SELECT application_id, student_id, job_id, status FROM applications ORDER BY application_id DESC LIMIT 2
++----------------+------------+--------+-------------+
+| application_id | student_id | job_id | status      |
++----------------+------------+--------+-------------+
+|             22 |          6 |      2 | APPLIED     |
+|             21 |          9 |      6 | SHORTLISTED |
++----------------+------------+--------+-------------+
+
+
+### AFTER APPLY: audit row from trigger
+mysql> SELECT audit_id, table_name, action, record_id, new_data FROM audit_log ORDER BY audit_id DESC LIMIT 1
++----------+--------------+--------+-----------+-----------------------------------------------------+
+| audit_id | table_name   | action | record_id | new_data                                            |
++----------+--------------+--------+-----------+-----------------------------------------------------+
+|        4 | applications | INSERT | 22        | {"job_id": 2, "status": "APPLIED", "student_id": 6} |
++----------+--------------+--------+-----------+-----------------------------------------------------+
+
+
+### AFTER SCHEDULE: weak-entity row (application_id, round_no) + application moved to INTERVIEW
+mysql> SELECT r.*, a.status AS application_status FROM interview_rounds r JOIN applications a USING (application_id) WHERE a.student_id = 6
++----------------+----------+------------+--------------+---------+--------------------+
+| application_id | round_no | round_type | scheduled_on | result  | application_status |
++----------------+----------+------------+--------------+---------+--------------------+
+|             22 |        1 | TECHNICAL  | 2026-11-19   | PENDING | INTERVIEW          |
++----------------+----------+------------+--------------+---------+--------------------+
+
+
+### BEFORE ACCEPT: Sneha Iyer (student 4), offered Data Analyst
+mysql> SELECT application_id, job_id, status FROM applications WHERE student_id = 4; SELECT student_id, is_placed FROM students WHERE student_id = 4; SELECT job_id, title, openings FROM jobs WHERE job_id = 3; SELECT COUNT(*) AS placements FROM placements
++----------------+--------+---------+
+| application_id | job_id | status  |
++----------------+--------+---------+
+|              9 |      2 | APPLIED |
+|             10 |      3 | OFFERED |
++----------------+--------+---------+
++------------+-----------+
+| student_id | is_placed |
++------------+-----------+
+|          4 |         0 |
++------------+-----------+
++--------+--------------+----------+
+| job_id | title        | openings |
++--------+--------------+----------+
+|      3 | Data Analyst |        2 |
++--------+--------------+----------+
++------------+
+| placements |
++------------+
+|          4 |
++------------+
+
+
+### AFTER ACCEPT: trigger created the placement
+mysql> SELECT * FROM placements WHERE student_id = 4
++------------+----------------+--------+-------------+------------+
+| student_id | application_id | job_id | package_lpa | placed_on  |
++------------+----------------+--------+-------------+------------+
+|          4 |             10 |      3 |        9.00 | 2026-11-19 |
++------------+----------------+--------+-------------+------------+
+
+
+### AFTER ACCEPT: student marked placed, opening used up
+mysql> SELECT student_id, is_placed FROM students WHERE student_id = 4; SELECT job_id, title, openings FROM jobs WHERE job_id = 3
++------------+-----------+
+| student_id | is_placed |
++------------+-----------+
+|          4 |         1 |
++------------+-----------+
++--------+--------------+----------+
+| job_id | title        | openings |
++--------+--------------+----------+
+|      3 | Data Analyst |        1 |
++--------+--------------+----------+
+
+
+### AFTER ACCEPT: sp_accept_offer withdrew her other application
+mysql> SELECT application_id, job_id, status FROM applications WHERE student_id = 4
++----------------+--------+-----------+
+| application_id | job_id | status    |
++----------------+--------+-----------+
+|              9 |      2 | WITHDRAWN |
+|             10 |      3 | ACCEPTED  |
++----------------+--------+-----------+
+
+
+### AFTER ACCEPT: audit trail (PLACED)
+mysql> SELECT audit_id, table_name, action, record_id, new_data FROM audit_log WHERE action = 'PLACED'
++----------+--------------+--------+-----------+------------------------------------------------------+
+| audit_id | table_name   | action | record_id | new_data                                             |
++----------+--------------+--------+-----------+------------------------------------------------------+
+|       10 | applications | PLACED | 10        | {"job_id": 3, "status": "ACCEPTED", "student_id": 4} |
++----------+--------------+--------+-----------+------------------------------------------------------+
+
+Neo4j after accept: [{"student":"Sneha Iyer","company":"DataWorks","package_lpa":9}]
+
+### Student applied: row belongs to Meera (student 6)
+mysql> SELECT application_id, student_id, job_id, status FROM applications WHERE student_id = 6 ORDER BY application_id
++----------------+------------+--------+-----------+
+| application_id | student_id | job_id | status    |
++----------------+------------+--------+-----------+
+|             12 |          6 |      5 | REJECTED  |
+|             22 |          6 |      2 | INTERVIEW |
+|             23 |          6 |      6 | APPLIED   |
++----------------+------------+--------+-----------+
+
+
+### Student session: officer-only API calls (HTTP status)
+{
+  "GET /api/stats": 403,
+  "GET /api/inspect?table=users": 403,
+  "DELETE /api/jobs/1": 403,
+  "POST /api/students": 403
+}

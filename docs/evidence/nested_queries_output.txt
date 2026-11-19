@@ -1,0 +1,60 @@
+-- Output of running nested_queries against MySQL 8.4 (container placegraph-mysql)
+-- Generated 2026-11-19T06:10:36.515Z
+
++--------------+------+------+
+| name         | cgpa | dept |
++--------------+------+------+
+| Isha Gupta   | 9.50 | CSE  |
+| Diya Patel   | 9.20 | CSE  |
+| Aarav Sharma | 8.90 | CSE  |
+| Kabir Singh  | 8.40 | ECE  |
+| Neha Verma   | 8.70 | IT   |
+| Ananya Das   | 7.90 | MECH |
++--------------+------+------+
++-----------+-------------+
+| name      | industry    |
++-----------+-------------+
+| TechNova  | IT Services |
+| DataWorks | Analytics   |
+| CloudNine | Cloud       |
++-----------+-------------+
++-------------+------+
+| name        | cgpa |
++-------------+------+
+| Meera Nair  | 7.20 |
+| Arjun Reddy | 6.80 |
+| Vikram Rao  | 6.50 |
++-------------+------+
++------------------+-----------+
+| title            | company   |
++------------------+-----------+
+| Graduate Trainee | CloudNine |
++------------------+-----------+
++------------+-------------------+-------------+
+| company    | title             | package_lpa |
++------------+-------------------+-------------+
+| DataWorks  | ML Engineer       |       18.00 |
+| CloudNine  | Cloud Engineer    |       14.00 |
+| TechNova   | Software Engineer |       12.00 |
+| CircuitPro | Embedded Engineer |        8.00 |
+| AutoDrive  | Design Engineer   |        7.50 |
++------------+-------------------+-------------+
++------+----------+--------+
+| code | students | placed |
++------+----------+--------+
+| CSE  |        4 |      2 |
+| MECH |        2 |      1 |
++------+----------+--------+
++--------------+------+
+| name         | cgpa |
++--------------+------+
+| Aarav Sharma | 8.90 |
+| Rohan Mehta  | 8.10 |
+| Isha Gupta   | 9.50 |
++--------------+------+
++------------+-------------+-----------+
+| name       | package_lpa | company   |
++------------+-------------+-----------+
+| Isha Gupta |       18.00 | DataWorks |
+| Diya Patel |       12.00 | TechNova  |
++------------+-------------+-----------+

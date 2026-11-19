@@ -1,0 +1,35 @@
+{
+  "name": "placegraph",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev -p 3001",
+    "build": "next build",
+    "start": "next start -p 3001",
+    "init": "node scripts/init-env.mjs",
+    "db:up": "docker compose up -d",
+    "db:setup": "node --env-file=.env scripts/setup.mjs",
+    "setup": "node scripts/init-env.mjs && docker compose up -d && node --env-file=.env scripts/setup.mjs",
+    "db:sync": "node --env-file=.env scripts/sync.mjs",
+    "user:create": "node --env-file=.env scripts/create-user.mjs",
+    "db:dictionary": "node --env-file=.env scripts/generate-dictionary.mjs",
+    "diagrams": "node scripts/gen-diagrams.mjs && node scripts/render-diagrams.mjs",
+    "evidence": "node --env-file=.env scripts/capture.mjs",
+    "evidence:sql": "node --env-file=.env scripts/sql-evidence.mjs",
+    "test": "node --env-file=.env --test --test-concurrency=1 tests/01-sql.test.mjs tests/02-api.test.mjs tests/03-graph.test.mjs",
+    "test:record": "node scripts/test-record.mjs"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "jose": "^6.2.18",
+    "mysql2": "^3.11.5",
+    "neo4j-driver": "^5.27.0",
+    "next": "^15.1.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "puppeteer-core": "^24.0.0"
+  }
+}
