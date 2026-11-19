@@ -1,42 +1,51 @@
 # PlaceGraph
 
-A placement cell management system for the DBMS mini project. **MySQL 8** is the system of record (tables, triggers, stored procedures, views, audit trail); **Neo4j 5** holds a graph of students, skills and jobs for skill-based job matching; **Next.js 15** provides the web app and API with two roles (placement officer and student). Full design and evidence: [docs/PROJECT_REPORT.md](docs/PROJECT_REPORT.md).
+A placement cell management system for the DBMS mini project. **MySQL 8** is the system of record (tables, triggers, stored procedures, views, audit trail); **Neo4j 5** holds a graph of students, skills and jobs for skill-based job matching; **Next.js 15** provides the web app and API with two roles (placement officer and student).
 
 ```
 Next.js pages --> /api/* (login + role checks) --> lib/core.js --> 1. MySQL (transaction, triggers, procedures)
                                                               --> 2. Neo4j (committed rows mirrored as nodes/edges)
 ```
 
-## Requirements
+## Quick start (4 commands)
 
-- Docker Desktop (running)
-- Node.js 20 or newer with npm
-- Free local ports 3001 (app), 3308 (MySQL), 7475 and 7688 (Neo4j). Change them in `.env.example` before the first run if needed.
-
-## First run
+Needs Docker Desktop (running) and Node.js 20+. Full beginner guide: **[docs/HOW_TO_RUN.md](docs/HOW_TO_RUN.md)**.
 
 ```bash
 npm install
-npm run setup     # creates .env with random secrets, starts MySQL + Neo4j, builds the schema, seeds data, builds the graph
+npm run setup     # creates .env with random secrets, starts MySQL + Neo4j, builds schema, seeds data, creates logins, builds graph
 npm run build
 npm start         # http://localhost:3001
 ```
 
-`npm run setup` creates a private, git-ignored `.env` with random database passwords, a JWT secret and the two demo passwords. Open `.env` to read the demo logins:
+## Logins
 
-| Role | Email | Password |
+Sign in with a **username or email**. Passwords are random and live in your private, git-ignored `.env` file (`findstr DEMO .env` on Windows): officers use `DEMO_OFFICER_PASSWORD`, students use `DEMO_STUDENT_PASSWORD`.
+
+| Username | Email | Role |
 |---|---|---|
-| Placement officer | `officer@college.edu` | `DEMO_OFFICER_PASSWORD` in `.env` |
-| Student (Meera Nair) | `meera@college.edu` | `DEMO_STUDENT_PASSWORD` in `.env` |
+| `officer` | officer@college.edu | Placement officer (everything) |
+| `tpo` | tpo@college.edu | Placement officer |
+| `aarav` `diya` `rohan` `sneha` `kabir` `meera` `arjun` `ananya` `vikram` `isha` `neha` `rahul` | `<name>@college.edu` | Student, linked to the student with that first name |
 
-To reset the demo data at any time: `npm run db:setup`. Add another login: `npm run user:create -- someone@college.edu "a-long-password" student 5` (or `officer`, no student id).
-
-For development use `npm run dev` instead of build + start.
+Officers add or remove accounts on the **Users** page (or `npm run user:create -- <username> <email> <password> <officer|student> [student_id]`).
 
 ## Roles
 
-- **Officer:** manages students, companies, jobs, skills, departments; shortlists, schedules interviews, records results, makes and accepts offers; sees the dashboard, graph, queries, Trigger Lab and DB Inspector.
+- **Officer:** manages students, companies, jobs, skills, departments and users; shortlists, schedules interviews, records results, makes and accepts offers; sees the dashboard, graph, queries, Trigger Lab and DB Inspector.
 - **Student:** sees jobs and companies, applies as themselves, sees only their own applications, interview rounds, placement and graph job matches. Officer endpoints return 403. This is enforced on the server (`lib/access.js`), not just hidden in the UI.
+
+## Guides
+
+| Guide | What it is for |
+|---|---|
+| [docs/HOW_TO_RUN.md](docs/HOW_TO_RUN.md) | Run it step by step, everyday commands, fixing problems |
+| [docs/BUTTON_LIFECYCLE.md](docs/BUTTON_LIFECYCLE.md) | What happens, step by step, when you click each button |
+| [docs/SCHEMA_GUIDE.md](docs/SCHEMA_GUIDE.md) | The tables, relationships, triggers and graph explained simply |
+| [docs/DEMO_GUIDE.md](docs/DEMO_GUIDE.md) | Every item on the teacher's requirement list with exact demo steps |
+| [docs/PROJECT_REPORT.md](docs/PROJECT_REPORT.md) | Full project report |
+| [docs/REQUIREMENTS_CHECKLIST.md](docs/REQUIREMENTS_CHECKLIST.md) | Course requirements vs evidence |
+| [docs/README.md](docs/README.md) | Index of everything in `docs/` |
 
 ## Scripts
 
@@ -44,18 +53,18 @@ For development use `npm run dev` instead of build + start.
 |---|---|
 | `npm run setup` | First-time setup (env + containers + database + graph). |
 | `npm run db:up` | Start the containers only. |
-| `npm run db:setup` | Rebuild the database from `docs/sql/01..04`, create demo accounts, rebuild the graph. Resets all data. |
+| `npm run db:setup` | Rebuild the database from `docs/sql/01..04`, create the accounts, rebuild the graph. **Resets all data.** |
 | `npm run db:sync` | Rebuild the Neo4j graph from MySQL. |
 | `npm run user:create` | Create a login. |
 | `npm run db:dictionary` | Regenerate `docs/DATA_DICTIONARY.md` from the live catalog. |
-| `npm test` | Run all 34 tests (needs the app running; run `npm run db:setup` first). |
+| `npm test` | Run all 39 tests (needs the app running; run `npm run db:setup` first). |
 | `npm run test:record` | Reset, run all tests, save real output to `docs/test-results/latest.txt`. |
 | `npm run evidence:sql` | Run the demo SQL scripts on a fresh database and save their output to `docs/evidence/`. |
 | `npm run evidence` | Drive the real website in Edge and save screenshots and `crud_proof.txt`. |
 | `npm run diagrams` | Regenerate the ER diagram and relational schema (SVG, PDF, PNG). |
 | `npm run build` / `npm start` | Production build / run on port 3001. |
 
-Direct access during a demo (replace the password with `MYSQL_ROOT_PASSWORD` from `.env`):
+Direct access (replace the password with `MYSQL_ROOT_PASSWORD` from `.env`):
 
 ```bash
 docker exec -it -e MYSQL_PWD=YOUR_ROOT_PASSWORD placegraph-mysql mysql -uroot placegraph
@@ -70,6 +79,7 @@ Neo4j Browser: http://localhost:7475 (user `neo4j`, password `NEO4J_PASSWORD` fr
 - Accepting an offer creates the placement, marks the student placed and uses an opening (trigger); the student's other applications are withdrawn (procedure).
 - A FAILED interview round rejects the application (trigger).
 - A company with jobs and a department with students cannot be deleted; deleting a student cascades to their skills, applications and rounds.
+- A student account must be linked to a student record; an officer account must not be (trigger).
 - Every change to students, jobs, applications and rounds is recorded in `audit_log`.
 
 ## Project layout
@@ -80,15 +90,7 @@ components/     CrudPage (search, filters, role-aware), Auth gate, Nav, shared U
 lib/            core.js (MySQL + Neo4j), auth.js, access.js, db.js, graph.js, lab.js, queries.js, resources.js, env.js
 scripts/        setup, sync, user creation, dictionary, diagrams, evidence, test recorder
 tests/          01-sql, 02-api, 03-graph test suites
-docs/           PROJECT_REPORT, REQUIREMENTS_CHECKLIST, DATA_DICTIONARY, VIVA_NOTES, GIT_GUIDE, CONTRIBUTIONS,
-                ENDPOINT_UI, DIAGRAMS, diagrams (PDF/SVG/PNG), sql/, neo4j/, evidence/, screenshots/, test-results/
+docs/           guides, report, checklist, dictionary, diagrams, sql/, neo4j/, evidence/, screenshots/, test-results/
 ```
 
-## Project evidence and team work
-
-- [Project report](docs/PROJECT_REPORT.md) - [Requirements checklist](docs/REQUIREMENTS_CHECKLIST.md) - [Data dictionary](docs/DATA_DICTIONARY.md)
-- ER diagram: [PDF](docs/er_diagram.pdf) - Relational schema: [PDF](docs/relational_schema.pdf)
-- [Real test output](docs/test-results/latest.txt) - [SQL evidence](docs/evidence/) - [Screenshots](docs/screenshots/)
-- [Viva notes](docs/VIVA_NOTES.md) - [Endpoint map](docs/ENDPOINT_UI.md) - [Git guide](docs/GIT_GUIDE.md) - [Contributions](docs/CONTRIBUTIONS.md)
-
-Team names, register numbers, instructor approval, the live demonstration and the originality statement are for the team to supply (see the checklist and `docs/CONTRIBUTIONS.md`).
+Team names, register numbers, instructor approval, the live demonstration and the originality statement are for the team to supply (see `docs/REQUIREMENTS_CHECKLIST.md` and `docs/CONTRIBUTIONS.md`).

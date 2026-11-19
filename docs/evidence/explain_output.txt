@@ -1,5 +1,5 @@
 -- Output of running explain against MySQL 8.4 (container placegraph-mysql)
--- Generated 2026-11-19T06:10:27.798Z
+-- Generated 2026-11-19T08:51:40.004Z
 
 +----+-------------+-------+------------+----------+---------------+---------------+---------+-------+------+----------+-----------------------------------+
 | id | select_type | table | partitions | type     | possible_keys | key           | key_len | ref   | rows | filtered | Extra                             |
@@ -34,9 +34,9 @@
 +--------------+------------+----------------------+--------------+----------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+------------+
 | Table        | Non_unique | Key_name             | Seq_in_index | Column_name    | Collation | Cardinality | Sub_part | Packed | Null | Index_type | Comment | Index_comment | Visible | Expression |
 +--------------+------------+----------------------+--------------+----------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+------------+
-| applications |          0 | PRIMARY              |            1 | application_id | A         |           1 |     NULL |   NULL |      | BTREE      |         |               | YES     | NULL       |
-| applications |          0 | uq_applications_pair |            1 | student_id     | A         |           1 |     NULL |   NULL |      | BTREE      |         |               | YES     | NULL       |
-| applications |          0 | uq_applications_pair |            2 | job_id         | A         |           1 |     NULL |   NULL |      | BTREE      |         |               | YES     | NULL       |
-| applications |          1 | fk_app_job           |            1 | job_id         | A         |           1 |     NULL |   NULL |      | BTREE      |         |               | YES     | NULL       |
-| applications |          1 | idx_app_status       |            1 | status         | A         |           1 |     NULL |   NULL |      | BTREE      |         |               | YES     | NULL       |
+| applications |          0 | PRIMARY              |            1 | application_id | A         |          21 |     NULL |   NULL |      | BTREE      |         |               | YES     | NULL       |
+| applications |          0 | uq_applications_pair |            1 | student_id     | A         |          12 |     NULL |   NULL |      | BTREE      |         |               | YES     | NULL       |
+| applications |          0 | uq_applications_pair |            2 | job_id         | A         |          21 |     NULL |   NULL |      | BTREE      |         |               | YES     | NULL       |
+| applications |          1 | fk_app_job           |            1 | job_id         | A         |           7 |     NULL |   NULL |      | BTREE      |         |               | YES     | NULL       |
+| applications |          1 | idx_app_status       |            1 | status         | A         |           7 |     NULL |   NULL |      | BTREE      |         |               | YES     | NULL       |
 +--------------+------------+----------------------+--------------+----------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+------------+

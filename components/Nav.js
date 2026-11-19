@@ -7,7 +7,7 @@ const OFFICER = [
   ['/', 'Dashboard'], ['/students', 'Students'], ['/companies', 'Companies'], ['/jobs', 'Jobs'],
   ['/applications', 'Applications'], ['/interviews', 'Interviews'], ['/placements', 'Placements'],
   ['/skills', 'Skills'], ['/departments', 'Departments'], ['/graph', 'Graph'], ['/queries', 'Queries'],
-  ['/lab', 'Trigger Lab'], ['/inspector', 'DB Inspector'],
+  ['/users', 'Users'], ['/lab', 'Trigger Lab'], ['/inspector', 'DB Inspector'],
 ];
 const STUDENT = [
   ['/', 'My dashboard'], ['/jobs', 'Jobs'], ['/companies', 'Companies'], ['/applications', 'My applications'],
@@ -25,7 +25,7 @@ export default function Nav() {
         <Link key={href} href={href} className={'link' + (path === href ? ' active' : '')}>{label}</Link>
       ))}
       <span className="right muted" style={{ fontSize: 13 }}>
-        {user.email} <span className={`pill ${user.role === 'officer' ? 'violet' : 'neo'}`}>{user.role}</span>{' '}
+        {user.username} <span className={`pill ${user.role === 'officer' ? 'violet' : 'neo'}`}>{user.role}</span>{' '}
         <button onClick={logout}>Sign out</button>
       </span>
     </nav>

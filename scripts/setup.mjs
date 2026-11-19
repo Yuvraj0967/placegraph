@@ -2,7 +2,7 @@
 //   npm run db:setup
 //  1. waits for the MySQL + Neo4j containers
 //  2. runs docs/sql/01..04 inside MySQL (DDL, triggers, procedures, seed DML) as root
-//  3. creates the two demo accounts (officer + student) with bcrypt-hashed passwords
+//  3. creates the demo accounts (2 officers + one account per student) with bcrypt-hashed passwords
 //  4. builds the Neo4j graph from the freshly seeded MySQL data
 import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
@@ -39,15 +39,25 @@ for (const file of ['01_ddl.sql', '02_triggers.sql', '03_procedures.sql', '04_dm
   console.log(`  applied ${file}`);
 }
 
-// demo accounts: passwords come from .env (DEMO_*), only the bcrypt hash is stored
-const accounts = [
-  ['officer@college.edu', requireEnv('DEMO_OFFICER_PASSWORD'), 'officer', null],
-  ['meera@college.edu', requireEnv('DEMO_STUDENT_PASSWORD'), 'student', 6], // Meera Nair
+// ---------------------------------------------------------------- demo accounts
+// Login with the username OR the email. Passwords come from .env (DEMO_*); only bcrypt hashes are stored.
+//   officers share DEMO_OFFICER_PASSWORD, students share DEMO_STUDENT_PASSWORD.
+const officerPw = await hashPassword(requireEnv('DEMO_OFFICER_PASSWORD'));
+const studentPw = await hashPassword(requireEnv('DEMO_STUDENT_PASSWORD'));
+const officers = [
+  ['officer', 'officer@college.edu'],
+  ['tpo', 'tpo@college.edu'], // training & placement officer
 ];
-for (const [email, password, role, studentId] of accounts) {
-  await pool.query('INSERT INTO users (email, password_hash, role, student_id) VALUES (?, ?, ?, ?)', [email, await hashPassword(password), role, studentId]);
+for (const [username, email] of officers) {
+  await pool.query('INSERT INTO users (username, email, password_hash, role) VALUES (?, ?, ?, ?)', [username, email, officerPw, 'officer']);
 }
-console.log('  created demo accounts:', accounts.map((a) => `${a[0]} (${a[2]})`).join(', '), '- passwords are in .env');
+const [students] = await pool.query('SELECT student_id, name, email FROM students ORDER BY student_id');
+for (const s of students) {
+  const username = s.name.split(' ')[0].toLowerCase(); // "Meera Nair" -> meera
+  await pool.query('INSERT INTO users (username, email, password_hash, role, student_id) VALUES (?, ?, ?, ?, ?)', [username, s.email, studentPw, 'student', s.student_id]);
+}
+console.log(`  created ${officers.length} officer and ${students.length} student accounts (usernames: ${officers.map((o) => o[0]).join(', ')}, ${students.map((s) => s.name.split(' ')[0].toLowerCase()).join(', ')})`);
+console.log('  passwords: see DEMO_OFFICER_PASSWORD / DEMO_STUDENT_PASSWORD in .env');
 
 console.log('Waiting for Neo4j...');
 for (let i = 0; ; i++) {

@@ -175,6 +175,38 @@ mysql> SELECT audit_id, table_name, action, record_id, new_data FROM audit_log W
 
 Neo4j after accept: [{"student":"Sneha Iyer","company":"DataWorks","package_lpa":9}]
 
+### Accounts in MySQL (only a bcrypt hash is stored, never the password)
+mysql> SELECT user_id, username, email, role, student_id, LEFT(password_hash, 7) AS hash_prefix FROM users ORDER BY user_id LIMIT 6
++---------+----------+---------------------+---------+------------+-------------+
+| user_id | username | email               | role    | student_id | hash_prefix |
++---------+----------+---------------------+---------+------------+-------------+
+|       1 | officer  | officer@college.edu | officer |       NULL | $2b$10$     |
+|       2 | tpo      | tpo@college.edu     | officer |       NULL | $2b$10$     |
+|       3 | aarav    | aarav@college.edu   | student |          1 | $2b$10$     |
+|       4 | diya     | diya@college.edu    | student |          2 | $2b$10$     |
+|       5 | rohan    | rohan@college.edu   | student |          3 | $2b$10$     |
+|       6 | sneha    | sneha@college.edu   | student |          4 | $2b$10$     |
++---------+----------+---------------------+---------+------------+-------------+
+
+
+### AFTER CREATE account
+mysql> SELECT user_id, username, role, student_id FROM users WHERE username = 'demo.officer'
++---------+--------------+---------+------------+
+| user_id | username     | role    | student_id |
++---------+--------------+---------+------------+
+|      15 | demo.officer | officer |       NULL |
++---------+--------------+---------+------------+
+
+
+### AFTER DELETE account
+mysql> SELECT COUNT(*) AS rows_for_demo_officer FROM users WHERE username = 'demo.officer'
++-----------------------+
+| rows_for_demo_officer |
++-----------------------+
+|                     0 |
++-----------------------+
+
+
 ### Student applied: row belongs to Meera (student 6)
 mysql> SELECT application_id, student_id, job_id, status FROM applications WHERE student_id = 6 ORDER BY application_id
 +----------------+------------+--------+-----------+

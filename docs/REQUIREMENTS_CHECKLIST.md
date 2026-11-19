@@ -48,7 +48,7 @@ Source: the course brief "DBMS Experiential Learning – Level 3 Project" (requi
 | 10 | Environment variables | Met | `.env`, `lib/env.js`, scripts use `--env-file=.env`. |
 | 11 | Backend authentication | Met | bcrypt + JWT cookie, `/api/auth`; 401 tests. |
 | 11 | Minimum two domain roles | Met | `officer` and `student`; 403 tests; student scoping. |
-| 12 | Database-level input validation | Met | CHECK/FK/UNIQUE/ENUM/triggers; 19 SQL tests. |
+| 12 | Database-level input validation | Met | CHECK/FK/UNIQUE/ENUM/triggers; 21 SQL tests. |
 | 12 | Data consistency and integrity | Met | Transactions, trigger-maintained derived data, audit; rollback test. |
 | 13 | Objectives | Met | PROJECT_REPORT §2. |
 | 13 | Functional requirements | Met | §3. |
@@ -60,7 +60,7 @@ Source: the course brief "DBMS Experiential Learning – Level 3 Project" (requi
 | 13 | Important queries | Met | §11 and evidence files. |
 | 13 | System architecture | Met | §4. |
 | 13 | Application screenshots | Met | `docs/screenshots/`, §14. |
-| 13 | Testing results | Met | `docs/test-results/latest.txt`: 34 pass, 0 fail, §15. |
+| 13 | Testing results | Met | `docs/test-results/latest.txt`: 39 pass, 0 fail, §15. |
 | 13 | Conclusion | Met | §17. |
 | 14 | Maintain source in Git/GitHub | Partial | Local git repository with commits; the team must push it to GitHub (GIT_GUIDE.md). |
 | 14 | Individual contribution commits | Needs human | Each member must commit their own genuine work. |
@@ -77,4 +77,4 @@ Source: the course brief "DBMS Experiential Learning – Level 3 Project" (requi
 | 17 | Connect concepts, design, implementation, web app | Met | Report §§9-12 mapped to files; tests exercise the whole stack. |
 | 17 | Justified SQL/NoSQL choice | Met | §5. |
 
-**Verification summary.** `npm run db:setup` applies all SQL and builds the graph; `npm run build` compiles; `npm test` passes 34/34 on a freshly seeded database; `npm run evidence` produced the screenshots and transcripts in `docs/`. Not covered: keyboard/screen-reader review, a second operating system, the live course demonstration, and any instructor approval record.
+**Verification summary.** `npm run db:setup` applies all SQL and builds the graph; `npm run build` compiles; `npm test` passes 39/39 on a freshly seeded database; `npm run evidence` produced the screenshots and transcripts in `docs/`. Not covered: keyboard/screen-reader review, a second operating system, the live course demonstration, and any instructor approval record.

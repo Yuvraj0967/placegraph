@@ -49,4 +49,4 @@ Study prompts that refer to the current source. Read the files and run the demo 
 3. **1:30-2:30** Sign in as the officer: apply Arjun Reddy (CGPA 6.8) to Software Engineer (min 7.5): the trigger rejects it. Apply, shortlist and schedule a round for Meera.
 4. **2:30-3:20** Accept Sneha's offer: show Placements, audit log, openings and the Neo4j `PLACED_AT` edge. Show Trigger Lab (code, before, fire, after).
 5. **3:20-4:10** Sign out, sign in as the student: own dashboard and job matches, apply as herself, officer pages blocked (403).
-6. **4:10-5:00** Show `docs/test-results/latest.txt` (34 pass) and `git shortlog -sn --all` once both members have real commits. State one limitation.
+6. **4:10-5:00** Show `docs/test-results/latest.txt` (39 pass) and `git shortlog -sn --all` once both members have real commits. State one limitation.

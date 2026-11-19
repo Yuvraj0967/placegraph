@@ -7,7 +7,7 @@ export const dynamic = 'force-dynamic';
 // DELETE /api/auth  -> sign out
 export const GET = () => respond(async () => ({ user: await currentUser() }));
 export const POST = (req) => respond(async () => {
-  const { email, password } = await req.json();
-  return { user: await login(email, password) };
+  const { username, email, password } = await req.json(); // 'username' may hold a username or an email
+  return { user: await login(username ?? email, password) };
 });
 export const DELETE = () => respond(async () => { await logout(); return { ok: true }; });

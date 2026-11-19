@@ -4,8 +4,8 @@
 
 | Suite | File | Covers |
 |---|---|---|
-| SQL (19) | `tests/01-sql.test.mjs` | constraints, guard triggers, auto placement, auto rejection, audit, procedures, views, FULLTEXT, transaction rollback. Each test runs in a transaction that is rolled back. |
-| API (10) | `tests/02-api.test.mjs` | authentication, 401/403, student scoping, CRUD lifecycle, validation, workflow errors, search and filters, student applying. Needs the app running on port 3001. |
+| SQL (21) | `tests/01-sql.test.mjs` | constraints, guard triggers, auto placement, auto rejection, audit, procedures, views, FULLTEXT, transaction rollback. Each test runs in a transaction that is rolled back. |
+| API (13) | `tests/02-api.test.mjs` | authentication, 401/403, student scoping, CRUD lifecycle, validation, workflow errors, search and filters, student applying. Needs the app running on port 3001. |
 | Graph (5) | `tests/03-graph.test.mjs` | MySQL/Neo4j sync, projection of create/delete and accepted offers, recommendations, shortest path. Changes data, so it runs last. |
 
 The suites expect a freshly seeded database: run `npm run db:setup` before `npm test`.

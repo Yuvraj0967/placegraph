@@ -74,7 +74,7 @@ console.log('Login');
 await go('/'); // not signed in yet: the login form is shown
 await page.waitForSelector('#email');
 await shot('login_screen');
-await page.type('#email', 'officer@college.edu');
+await page.type('#email', 'officer'); // usernames work as well as emails
 await page.type('#password', 'this-is-the-wrong-password');
 await clickText('button', 'Sign in');
 await page.waitForSelector('.notice.bad');
@@ -188,6 +188,24 @@ proof('AFTER ACCEPT: audit trail (PLACED)', "SELECT audit_id, table_name, action
 log.push('Neo4j after accept: ' + (await neo("MATCH (s:Student {id:4})-[p:PLACED_AT]->(c:Company) RETURN s.name AS student, c.name AS company, p.package AS package_lpa")));
 await go('/placements'); await shot('workflow_6_placements_page');
 
+// ----------------------------------------------------------------- Users page (officer): usernames
+console.log('Users');
+await go('/users'); await shot('users_page_usernames_and_roles');
+proof('Accounts in MySQL (only a bcrypt hash is stored, never the password)', "SELECT user_id, username, email, role, student_id, LEFT(password_hash, 7) AS hash_prefix FROM users ORDER BY user_id LIMIT 6");
+await clickText('button', 'Add account');
+await page.type('#username', 'demo.officer');
+await page.type('#email', 'demo.officer@college.edu');
+await page.type('#password', 'a-demo-password-1');
+await page.select('#role', 'officer');
+await shot('users_add_account_form');
+await clickText('button', 'Save');
+await waitNotice();
+await shot('users_account_created_hash_hidden_in_banner');
+proof('AFTER CREATE account', "SELECT user_id, username, role, student_id FROM users WHERE username = 'demo.officer'");
+await clickInRow('demo.officer', 'Delete');
+await waitNotice();
+proof('AFTER DELETE account', "SELECT COUNT(*) AS rows_for_demo_officer FROM users WHERE username = 'demo.officer'");
+
 // ----------------------------------------------------------------- Trigger & Procedure Lab
 console.log('Lab');
 for (const [tab, btn, name] of [
@@ -246,7 +264,7 @@ await shot('search_and_filter_students_unplaced');
 console.log('Student session');
 await clickText('button', 'Sign out');
 await page.waitForSelector('#email');
-await loginUI('meera@college.edu', process.env.DEMO_STUDENT_PASSWORD);
+await loginUI('meera', process.env.DEMO_STUDENT_PASSWORD);
 await page.waitForSelector('nav.top');
 await go('/'); await sleep(900); await shot('student_role_my_dashboard');
 await go('/jobs'); await shot('student_role_jobs_read_only');

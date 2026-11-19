@@ -1,5 +1,5 @@
 -- Output of running procedure_demo against MySQL 8.4 (container placegraph-mysql)
--- Generated 2026-11-19T06:10:43.968Z
+-- Generated 2026-11-19T08:52:09.524Z
 
 *************************** 1. row ***************************
            Procedure: sp_accept_offer

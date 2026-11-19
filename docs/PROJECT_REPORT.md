@@ -32,6 +32,7 @@ Placement management system for a college placement cell. MySQL 8 is the source 
 | F8 | Dashboard: placement statistics, department-wise view, pipeline | views `v_placement_summary`, `v_job_pipeline` |
 | F9 | Graph: job matches by skills, skill gaps, similar students, shortest connection | `lib/graph.js`, Graph and Queries pages |
 | F10 | A student sees only their own data and cannot perform officer actions | `lib/access.js`, API tests |
+| F11 | Officers manage login accounts (usernames, roles, student link); 14 demo accounts are seeded | Users page, `/api/users`, `scripts/setup.mjs` |
 
 ## 4. System architecture
 
@@ -125,7 +126,7 @@ The SQL lives in `docs/sql/` and is the only thing that builds the database (`np
 
 - **Integration.** Route Handlers call `lib/core.js`, which uses a pooled MySQL connection and the Neo4j driver. The UI shows the SQL that ran and the status of both stores after every write; the DB Inspector page reads the raw tables.
 - **No hard-coded credentials.** `lib/env.js` reads configuration only from environment variables and refuses to start if one is missing or still a placeholder. `.env` is created with random secrets by `npm run init` and is git-ignored; `.env.example` contains placeholders only. Docker Compose interpolates the same variables. The application connects with a limited MySQL user, not root; root is used only by the setup script.
-- **Authentication.** Passwords are stored as bcrypt hashes. Login issues a signed JWT in an HTTP-only, SameSite=Lax cookie (8 hours; `Secure` when `COOKIE_SECURE=true`). The same error message is returned for an unknown email and a wrong password.
+- **Authentication.** Passwords are stored as bcrypt hashes. Login accepts a username or an email; it issues a signed JWT in an HTTP-only, SameSite=Lax cookie (8 hours; `Secure` when `COOKIE_SECURE=true`). The same error message is returned for an unknown email and a wrong password.
 - **Authorization.** Two roles, `officer` and `student`. The user's current role is read from MySQL on every protected request. Rules are enforced in the API (`lib/access.js`), not just in the UI: a student gets only their own student row, applications, interview rounds and placement, can only apply as themselves, and receives 403 for every officer endpoint. API tests prove this.
 
 ## 13. Data validation and integrity
@@ -140,7 +141,7 @@ Real screenshots taken from the running application by `npm run evidence` are in
 
 ## 15. Testing results
 
-`npm test` runs 34 automated tests (`tests/`): 19 SQL tests (constraints, every guard trigger, auto placement, auto rejection, audit, procedures, views, FULLTEXT, rollback), 10 API tests (authentication, 401/403, student scoping, CRUD lifecycle, validation, search and filters, student applying) and 5 graph tests (sync, projection of create/delete and accepted offers, recommendations, shortest path). Real output is saved by `npm run test:record` in `docs/test-results/latest.txt`: **34 pass, 0 fail**. The tests expect a freshly seeded database (`npm run db:setup`). The suite found one real defect during development: CGPA was stored as `DECIMAL(3,2)`, which cannot hold 10.00; it was widened to `DECIMAL(4,2)` and a regression test was added.
+`npm test` runs 39 automated tests (`tests/`): 21 SQL tests (constraints, every guard trigger, auto placement, auto rejection, audit, procedures, views, FULLTEXT, rollback), 13 API tests (authentication, 401/403, student scoping, CRUD lifecycle, validation, search and filters, student applying) and 5 graph tests (sync, projection of create/delete and accepted offers, recommendations, shortest path). Real output is saved by `npm run test:record` in `docs/test-results/latest.txt`: **39 pass, 0 fail**. The tests expect a freshly seeded database (`npm run db:setup`). The suite found one real defect during development: CGPA was stored as `DECIMAL(3,2)`, which cannot hold 10.00; it was widened to `DECIMAL(4,2)` and a regression test was added.
 
 ## 16. Limitations and future work
 

@@ -104,3 +104,44 @@ test('a student can apply, but only as themselves, and is then blocked from appl
   assert.match(again.body.error, /already applied/);
   await call(o, 'DELETE', `/api/applications/${first.body.data.application_id}`); // clean up
 });
+
+test('login works with a username or an email, case-insensitively', async () => {
+  const byName = await login('TPO', process.env.DEMO_OFFICER_PASSWORD);
+  assert.equal(byName.status, 200);
+  assert.equal(byName.body.user.username, 'tpo');
+  const byEmail = await login('tpo@college.edu', process.env.DEMO_OFFICER_PASSWORD);
+  assert.equal(byEmail.status, 200);
+  const student = await login('meera', process.env.DEMO_STUDENT_PASSWORD);
+  assert.equal(student.body.user.role, 'student');
+  assert.equal(student.body.user.student_id, 6);
+});
+
+test('every student has a demo account (username = first name)', async () => {
+  const o = await asOfficer();
+  const users = (await call(o, 'GET', '/api/users')).body;
+  assert.equal(users.filter((u) => u.role === 'student').length, 12);
+  assert.equal(users.filter((u) => u.role === 'officer').length >= 2, true);
+});
+
+test('Users page API: officer creates, edits, signs in as and deletes an account; rules are enforced', async () => {
+  const o = await asOfficer();
+  const s = await asStudent();
+  assert.equal((await call(s, 'GET', '/api/users')).status, 403);
+  assert.equal((await call(o, 'POST', '/api/users', { username: 'tmp', email: 'tmp@college.edu', role: 'officer', password: 'short' })).status, 400);
+  assert.equal((await call(o, 'POST', '/api/users', { username: 'tmp', email: 'tmp@college.edu', role: 'student', password: 'longenough1' })).status, 400); // student needs a link
+  const made = await call(o, 'POST', '/api/users', { username: 'Tmp.User', email: 'tmp.user@college.edu', role: 'officer', password: 'longenough1' });
+  assert.equal(made.status, 200);
+  assert.equal(made.body.data.username, 'tmp.user');
+  assert.ok(!JSON.stringify(made.body).includes('$2')); // the bcrypt hash is never returned or logged
+  const id = made.body.data.user_id;
+  try {
+    assert.equal((await login('tmp.user', 'longenough1')).status, 200);
+    await call(o, 'PUT', `/api/users/${id}`, { username: 'tmp.user', email: 'tmp.user@college.edu', role: 'officer', password: 'anotherpass2' });
+    assert.equal((await login('tmp.user', 'longenough1')).status, 401); // old password no longer works
+    assert.equal((await login('tmp.user', 'anotherpass2')).status, 200);
+    assert.equal((await call(o, 'DELETE', '/api/users/1')).status, 400); // cannot delete yourself
+  } finally {
+    assert.equal((await call(o, 'DELETE', `/api/users/${id}`)).status, 200);
+  }
+  assert.equal((await login('tmp.user', 'anotherpass2')).status, 401);
+});

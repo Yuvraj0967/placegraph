@@ -1,5 +1,5 @@
 -- Output of running trigger_demo against MySQL 8.4 (container placegraph-mysql)
--- Generated 2026-11-19T06:10:40.381Z
+-- Generated 2026-11-19T08:52:00.283Z
 
 *************************** 1. row ***************************
                Trigger: trg_applications_after_update
@@ -24,7 +24,7 @@ END
   character_set_client: latin1
   collation_connection: latin1_swedish_ci
     Database Collation: utf8mb4_0900_ai_ci
-               Created: 2026-11-19 06:10:39.09
+               Created: 2026-11-19 08:51:57.57
 +----------------+------------+--------+---------+
 | application_id | student_id | job_id | status  |
 +----------------+------------+--------+---------+
@@ -83,7 +83,7 @@ END
   character_set_client: latin1
   collation_connection: latin1_swedish_ci
     Database Collation: utf8mb4_0900_ai_ci
-               Created: 2026-11-19 06:10:39.12
+               Created: 2026-11-19 08:51:57.67
 +----------------+-----------+
 | application_id | status    |
 +----------------+-----------+
@@ -124,7 +124,7 @@ END
   character_set_client: latin1
   collation_connection: latin1_swedish_ci
     Database Collation: utf8mb4_0900_ai_ci
-               Created: 2026-11-19 06:10:39.13
+               Created: 2026-11-19 08:51:57.71
 +------------+------------+------+
 | student_id | name       | cgpa |
 +------------+------------+------+
@@ -138,7 +138,7 @@ END
 +----------+------------+--------+-----------+------------------------------------------------------+------------------------------------------------------+---------------------+
 | audit_id | table_name | action | record_id | old_data                                             | new_data                                             | changed_at          |
 +----------+------------+--------+-----------+------------------------------------------------------+------------------------------------------------------+---------------------+
-|        6 | students   | UPDATE | 9         | {"cgpa": 6.50, "name": "Vikram Rao", "is_placed": 0} | {"cgpa": 6.90, "name": "Vikram Rao", "is_placed": 0} | 2026-11-19 06:10:40 |
+|        6 | students   | UPDATE | 9         | {"cgpa": 6.50, "name": "Vikram Rao", "is_placed": 0} | {"cgpa": 6.90, "name": "Vikram Rao", "is_placed": 0} | 2026-11-19 08:52:00 |
 +----------+------------+--------+-----------+------------------------------------------------------+------------------------------------------------------+---------------------+
 
 -- messages --

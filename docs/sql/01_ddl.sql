@@ -172,12 +172,14 @@ CREATE TABLE audit_log (
 -- ---------------------------------------------------------------------
 CREATE TABLE users (
     user_id       INT          NOT NULL AUTO_INCREMENT,
+    username      VARCHAR(40)  NOT NULL,
     email         VARCHAR(120) NOT NULL,
     password_hash VARCHAR(100) NOT NULL,
     role          ENUM('officer','student') NOT NULL,
     student_id    INT          NULL,
     created_at    TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT pk_users PRIMARY KEY (user_id),
+    CONSTRAINT uq_users_username UNIQUE (username),
     CONSTRAINT uq_users_email UNIQUE (email),
     CONSTRAINT uq_users_student UNIQUE (student_id),
     CONSTRAINT fk_users_student FOREIGN KEY (student_id)

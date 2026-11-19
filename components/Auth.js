@@ -16,7 +16,7 @@ function LoginForm({ onLogin }) {
     setBusy(true);
     setError('');
     try {
-      const { user } = await api('/api/auth', { method: 'POST', body: JSON.stringify({ email, password }) });
+      const { user } = await api('/api/auth', { method: 'POST', body: JSON.stringify({ username: email, password }) });
       onLogin(user);
     } catch (err) {
       setError(err.message);
@@ -31,14 +31,14 @@ function LoginForm({ onLogin }) {
         <h1 style={{ fontSize: 24 }}>🎓 PlaceGraph</h1>
         <p className="sub">Sign in to the placement cell.</p>
         {error && <div className="notice bad"><b>✖ {error}</b></div>}
-        <label htmlFor="email">Email</label>
-        <input id="email" type="email" autoComplete="username" required value={email} onChange={(e) => setEmail(e.target.value)} />
+        <label htmlFor="email">Username or email</label>
+        <input id="email" type="text" autoComplete="username" required value={email} onChange={(e) => setEmail(e.target.value)} />
         <div style={{ height: 12 }} />
         <label htmlFor="password">Password</label>
         <input id="password" type="password" autoComplete="current-password" required value={password} onChange={(e) => setPassword(e.target.value)} />
         <div style={{ height: 16 }} />
         <button className="primary" disabled={busy}>{busy ? 'Signing in…' : 'Sign in'}</button>
-        <p className="muted" style={{ fontSize: 12, marginBottom: 0 }}>Demo accounts and their passwords are created by <code>npm run db:setup</code>; the passwords are in your private <code>.env</code> file.</p>
+        <p className="muted" style={{ fontSize: 12, marginBottom: 0 }}>Demo usernames: <code>officer</code>, <code>tpo</code>, or a student's first name such as <code>meera</code>. The passwords are in your private <code>.env</code> file (<code>DEMO_OFFICER_PASSWORD</code> / <code>DEMO_STUDENT_PASSWORD</code>).</p>
       </form>
     </div>
   );

@@ -256,6 +256,7 @@ Indexes
 | Column | Type | Null | Key | Default | Extra |
 |---|---|---|---|---|---|
 | user_id | int | NO | PRI |  | auto_increment |
+| username | varchar(40) | NO | UNI |  |  |
 | email | varchar(120) | NO | UNI |  |  |
 | password_hash | varchar(100) | NO |  |  |  |
 | role | enum('officer','student') | NO |  |  |  |
@@ -275,6 +276,7 @@ Indexes
 | PRIMARY | user_id | unique | BTREE |
 | uq_users_email | email | unique | BTREE |
 | uq_users_student | student_id | unique | BTREE |
+| uq_users_username | username | unique | BTREE |
 
 ## Views
 
@@ -314,4 +316,4 @@ Indexes
 
 ## Totals
 
-12 tables, 2 views, 16 triggers, 7 routines, 37 table constraints (PK, FK, UNIQUE, CHECK).
+12 tables, 2 views, 16 triggers, 7 routines, 38 table constraints (PK, FK, UNIQUE, CHECK).

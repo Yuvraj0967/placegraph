@@ -147,3 +147,21 @@ test('a perfect CGPA of 10.00 can be stored (regression: DECIMAL(3,2) topped out
     const [[r]] = await c.query("SELECT cgpa FROM students WHERE email = 'perfect@college.edu'");
     assert.equal(Number(r.cgpa), 10);
   }));
+
+test('UNIQUE: a username can only be used once', () =>
+  inRollback(async (c) => {
+    const e = await expectDbError(c.query("INSERT INTO users (username, email, password_hash, role) VALUES ('officer', 'other@college.edu', 'hash', 'officer')"));
+    assert.equal(e.errno, 1062);
+  }));
+
+test('trigger: deleting an ACCEPTED application un-places the student and returns the opening', () =>
+  inRollback(async (c) => {
+    const [[before]] = await c.query('SELECT openings FROM jobs WHERE job_id = 1'); // Diya (student 2) accepted job 1 in the seed
+    await c.query('DELETE FROM applications WHERE application_id = 4');
+    const [[st]] = await c.query('SELECT is_placed FROM students WHERE student_id = 2');
+    const [[after]] = await c.query('SELECT openings FROM jobs WHERE job_id = 1');
+    const [[pl]] = await c.query('SELECT COUNT(*) AS n FROM placements WHERE student_id = 2');
+    assert.equal(st.is_placed, 0);
+    assert.equal(after.openings, before.openings + 1);
+    assert.equal(pl.n, 0);
+  }));

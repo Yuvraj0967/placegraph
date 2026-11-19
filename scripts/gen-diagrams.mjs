@@ -82,7 +82,7 @@ svg += attrs(...P.job, [pk('job_id'), at('title'), at('package_lpa'), at('min_cg
 svg += attrs(...P.app, [pk('application_id'), at('applied_on'), at('status')], [-135, -45, 135], 130);
 svg += attrs(...P.round, [part('round_no'), at('round_type'), at('scheduled_on'), at('result'), { n: 'application_id (FK)', key: 'pk' }], [160, 125, 75, 30, -15], 165, true);
 svg += attrs(...P.placement, [{ n: 'student_id (PK)', key: 'pk' }, at('package_lpa'), at('placed_on'), at('application_id')], [90, 135, 180, 225], 135);
-svg += attrs(...P.user, [pk('user_id'), at('email'), at('password_hash'), at('role'), { n: 'student_id (FK, optional)' }], [120, 160, 200, 240, 280], 140, true);
+svg += attrs(...P.user, [pk('user_id'), at('username'), at('email'), at('password_hash'), at('role'), { n: 'student_id (FK, optional)' }], [100, 135, 170, 205, 240, 275], 140, true);
 svg += attrs(...P.audit, [pk('audit_id'), at('table_name'), at('action'), at('record_id'), at('old_data'), at('new_data'), at('changed_at')], [-150, -105, -60, -15, 30, 75, 120], 135, true);
 
 svg += entity(...P.dept, 'DEPARTMENT') + entity(...P.student, 'STUDENT') + entity(...P.skill, 'SKILL') + entity(...P.company, 'COMPANY');
@@ -114,7 +114,7 @@ const T = {
   interview_rounds: { x: 800, y: 400, cols: [['application_id', 'INT', 'PK,FK', 'applications'], ['round_no', 'INT', 'PK'], ['round_type', 'ENUM', ''], ['scheduled_on', 'DATE', ''], ['result', 'ENUM', '']] },
   job_skills: { x: 1180, y: 400, cols: [['job_id', 'INT', 'PK,FK', 'jobs'], ['skill_id', 'INT', 'PK,FK', 'skills']] },
   audit_log: { x: 1560, y: 400, cols: [['audit_id', 'BIGINT', 'PK'], ['table_name', 'VARCHAR(40)', ''], ['action', 'VARCHAR(20)', ''], ['record_id', 'VARCHAR(40)', ''], ['old_data', 'JSON', ''], ['new_data', 'JSON', ''], ['changed_at', 'TIMESTAMP', '']] },
-  users: { x: 40, y: 640, cols: [['user_id', 'INT', 'PK'], ['email', 'VARCHAR(120)', 'UQ'], ['password_hash', 'VARCHAR(100)', ''], ['role', "ENUM('officer','student')", ''], ['student_id', 'INT', 'UQ,FK', 'students'], ['created_at', 'TIMESTAMP', '']] },
+  users: { x: 40, y: 640, cols: [['user_id', 'INT', 'PK'], ['username', 'VARCHAR(40)', 'UQ'], ['email', 'VARCHAR(120)', 'UQ'], ['password_hash', 'VARCHAR(100)', ''], ['role', "ENUM('officer','student')", ''], ['student_id', 'INT', 'UQ,FK', 'students'], ['created_at', 'TIMESTAMP', '']] },
   skills: { x: 800, y: 640, cols: [['skill_id', 'INT', 'PK'], ['name', 'VARCHAR(60)', 'UQ']] },
 };
 const TW = 340, RH = 26, HH = 32;
@@ -171,5 +171,5 @@ const head = `<text x="40" y="36" font-size="22" font-weight="700">PlaceGraph - 
 <text x="40" y="56" font-size="13" fill="#555">PK = primary key, FK = foreign key (arrow points at the referenced table), UQ = unique. The red "→ table" on a row names the referenced table.</text>
 <text x="40" y="74" font-size="13" fill="#555">Triggers: eligibility guard, status flow, auto placement, round result, user role rule, audit. Procedures: sp_apply, sp_update_application_status, sp_schedule_round, sp_set_round_result, sp_accept_offer, sp_student_report, sp_placement_stats.</text>`;
 fs.writeFileSync(path.join(out, 'relational_schema.svg'),
-  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1940 860" width="1940" height="860" font-family="Segoe UI, Arial, sans-serif"><defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="#444"/></marker></defs><rect width="100%" height="100%" fill="#fff"/>${head}${r}</svg>`);
+  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1940 880" width="1940" height="880" font-family="Segoe UI, Arial, sans-serif"><defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="#444"/></marker></defs><rect width="100%" height="100%" fill="#fff"/>${head}${r}</svg>`);
 console.log('wrote er_diagram.svg and relational_schema.svg');

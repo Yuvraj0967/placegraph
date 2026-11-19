@@ -1,5 +1,5 @@
 -- Output of running dml_demo against MySQL 8.4 (container placegraph-mysql)
--- Generated 2026-11-19T06:10:32.324Z
+-- Generated 2026-11-19T08:51:47.036Z
 
 +------------+------------+-------------+-----------+
 | company_id | name       | industry    | location  |
@@ -64,7 +64,7 @@
 +----------+------------+--------+-----------+--------------------------------------------------------------------+-------------------------------------------------------------------------------------+---------------------+
 | audit_id | table_name | action | record_id | old_data                                                           | new_data                                                                            | changed_at          |
 +----------+------------+--------+-----------+--------------------------------------------------------------------+-------------------------------------------------------------------------------------+---------------------+
-|        3 | jobs       | DELETE | 9         | {"title": "Business Analyst", "company_id": 6}                     | NULL                                                                                | 2026-11-19 06:10:32 |
-|        2 | jobs       | UPDATE | 9         | {"title": "Business Analyst", "openings": 2, "package_lpa": 10.00} | {"title": "Business Analyst", "openings": 3, "package_lpa": 11.50}                  | 2026-11-19 06:10:32 |
-|        1 | jobs       | INSERT | 9         | NULL                                                               | {"title": "Business Analyst", "openings": 2, "company_id": 6, "package_lpa": 10.00} | 2026-11-19 06:10:32 |
+|        3 | jobs       | DELETE | 9         | {"title": "Business Analyst", "company_id": 6}                     | NULL                                                                                | 2026-11-19 08:51:46 |
+|        2 | jobs       | UPDATE | 9         | {"title": "Business Analyst", "openings": 2, "package_lpa": 10.00} | {"title": "Business Analyst", "openings": 3, "package_lpa": 11.50}                  | 2026-11-19 08:51:46 |
+|        1 | jobs       | INSERT | 9         | NULL                                                               | {"title": "Business Analyst", "openings": 2, "company_id": 6, "package_lpa": 10.00} | 2026-11-19 08:51:46 |
 +----------+------------+--------+-----------+--------------------------------------------------------------------+-------------------------------------------------------------------------------------+---------------------+

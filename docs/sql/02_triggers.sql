@@ -91,6 +91,12 @@ CREATE TRIGGER trg_applications_after_delete
 AFTER DELETE ON applications
 FOR EACH ROW
 BEGIN
+    -- deleting an ACCEPTED application cascades away its placement, so undo the placement side effects
+    IF OLD.status = 'ACCEPTED' THEN
+        UPDATE students SET is_placed = 0 WHERE student_id = OLD.student_id;
+        UPDATE jobs     SET openings = openings + 1 WHERE job_id = OLD.job_id;
+    END IF;
+
     INSERT INTO audit_log (table_name, action, record_id, old_data)
     VALUES ('applications', 'DELETE', OLD.application_id,
             JSON_OBJECT('student_id', OLD.student_id, 'job_id', OLD.job_id, 'status', OLD.status));
