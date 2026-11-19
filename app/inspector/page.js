@@ -2,7 +2,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { api, DataTable } from '@/components/ui';
 
-const tables = ['students', 'departments', 'companies', 'jobs', 'skills', 'student_skills', 'job_skills', 'applications', 'interview_rounds', 'placements', 'audit_log', 'v_placement_summary', 'triggers', 'procedures'];
+const tables = ['students', 'departments', 'companies', 'jobs', 'skills', 'student_skills', 'job_skills', 'applications', 'interview_rounds', 'placements', 'users', 'audit_log', 'v_placement_summary', 'v_job_pipeline', 'triggers', 'procedures'];
 
 export default function Inspector() {
   const [table, setTable] = useState('students');
