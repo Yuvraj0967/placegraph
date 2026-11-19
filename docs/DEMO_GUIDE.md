@@ -137,6 +137,6 @@ Everything is in `docs/`:
 - [ ] Procedures run (`CALL sp_accept_offer(17)` etc.)
 - [ ] ER and schema PDFs printed; you can explain the weak entity
 - [ ] `npm test` shows 39 passing
-- [ ] You can explain every part: [VIVA_NOTES.md](VIVA_NOTES.md) and [BUTTON_LIFECYCLE.md](BUTTON_LIFECYCLE.md)
+- [ ] You can explain every part: [VIVA_PREP_GUIDE.md](VIVA_PREP_GUIDE.md), [VIVA_NOTES.md](VIVA_NOTES.md) and [BUTTON_LIFECYCLE.md](BUTTON_LIFECYCLE.md)
 
 Run `npm run db:setup` again right before presenting so the sample data is in its starting state.

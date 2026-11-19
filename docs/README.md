@@ -8,7 +8,8 @@ Start here. Pick the guide that matches what you need.
 | **Know what happens when I click a button** | [BUTTON_LIFECYCLE.md](BUTTON_LIFECYCLE.md) |
 | **Understand the tables and relationships** | [SCHEMA_GUIDE.md](SCHEMA_GUIDE.md) |
 | **Present it: every item on the teacher's list, with exact steps** | [DEMO_GUIDE.md](DEMO_GUIDE.md) |
-| Prepare for viva questions | [VIVA_NOTES.md](VIVA_NOTES.md) |
+| **Prepare for the viva: 144 likely questions with answers, scenarios, theory, live cheat sheet** | [VIVA_PREP_GUIDE.md](VIVA_PREP_GUIDE.md) |
+| Short viva notes | [VIVA_NOTES.md](VIVA_NOTES.md) |
 | Read the full project report | [PROJECT_REPORT.md](PROJECT_REPORT.md) |
 | Check the course requirements against the evidence | [REQUIREMENTS_CHECKLIST.md](REQUIREMENTS_CHECKLIST.md) |
 | See every column, key and index (generated) | [DATA_DICTIONARY.md](DATA_DICTIONARY.md) |

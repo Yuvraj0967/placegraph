@@ -1,5 +1,7 @@
 # PlaceGraph viva notes
 
+> For the full question bank (144 questions with answers, scenarios, theory and a live cheat sheet) read [VIVA_PREP_GUIDE.md](VIVA_PREP_GUIDE.md). This file is the short version.
+
 Study prompts that refer to the current source. Read the files and run the demo yourself; do not memorise answers you cannot show.
 
 ## Project and design

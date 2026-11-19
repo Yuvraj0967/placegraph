@@ -43,6 +43,7 @@ Officers add or remove accounts on the **Users** page (or `npm run user:create -
 | [docs/BUTTON_LIFECYCLE.md](docs/BUTTON_LIFECYCLE.md) | What happens, step by step, when you click each button |
 | [docs/SCHEMA_GUIDE.md](docs/SCHEMA_GUIDE.md) | The tables, relationships, triggers and graph explained simply |
 | [docs/DEMO_GUIDE.md](docs/DEMO_GUIDE.md) | Every item on the teacher's requirement list with exact demo steps |
+| [docs/VIVA_PREP_GUIDE.md](docs/VIVA_PREP_GUIDE.md) | Detailed viva preparation: likely questions, answers, scenarios, theory, live cheat sheet |
 | [docs/PROJECT_REPORT.md](docs/PROJECT_REPORT.md) | Full project report |
 | [docs/REQUIREMENTS_CHECKLIST.md](docs/REQUIREMENTS_CHECKLIST.md) | Course requirements vs evidence |
 | [docs/README.md](docs/README.md) | Index of everything in `docs/` |
