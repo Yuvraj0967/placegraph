@@ -16,7 +16,7 @@ The teacher's priority: *"actually demonstrate the working database, execute que
 | 4 | **Window 1 (browser):** open http://localhost:3001, sign in as **`officer`** (password: `DEMO_OFFICER_PASSWORD` in `.env`) | menu with Dashboard, Students... |
 | 5 | **Window 2 (second browser window or private window):** open http://localhost:3001, sign in as **`meera`** (password: `DEMO_STUDENT_PASSWORD`) | short menu: My dashboard, Jobs... |
 | 6 | **MySQL prompt** (use `MYSQL_ROOT_PASSWORD` from `.env`):<br>`docker exec -it -e MYSQL_PWD=YOUR_ROOT_PASSWORD placegraph-mysql mysql -uroot placegraph` | prompt `mysql>` |
-| 7 | **Neo4j Browser:** open http://localhost:7475, user `neo4j`, password `NEO4J_PASSWORD` from `.env` | empty query box |
+| 7 | **Neo4j Browser:** open http://localhost:7475, **set Connection URL to `localhost:7688`** (not the default 7687), user `neo4j`, password `NEO4J_PASSWORD` from `.env` | "Instance: localhost:7688" shows at the top, empty query box |
 | 8 | Print `docs/er_diagram.pdf` and `docs/relational_schema.pdf` | on the table |
 | 9 | Open `docs/sql/` in your editor | files 01 to 08 visible |
 

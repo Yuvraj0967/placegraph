@@ -104,7 +104,7 @@ We **do** use NoSQL: **Neo4j** (a graph database). Do not claim more than that.
 - Queries: website **Queries** page (10 Cypher queries) or `docs/neo4j/cypher_queries.cypher`; the **Graph** page shows the picture and job matches.
 - Why a graph: job matching is a path `Student -> Skill <- Job`; listing the missing skills and similar students is a few lines of Cypher instead of many SQL joins.
 - Why MySQL is still the source of truth: rules, history and transactions. The graph can always be rebuilt (Dashboard -> *Rebuild graph from MySQL*).
-- Neo4j Browser (optional): http://localhost:7475, `MATCH (n) RETURN n LIMIT 80`.
+- Neo4j Browser (optional): http://localhost:7475 (set the Connection URL to `localhost:7688`), `MATCH (n) RETURN n LIMIT 80`.
 
 ## 11. Documentation folder
 

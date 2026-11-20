@@ -883,7 +883,7 @@ docker exec -it -e MYSQL_PWD=YOUR_ROOT_PASSWORD placegraph-mysql mysql -uroot pl
 | "Show CRUD reaching the DB" | Students page: Add / Edit / Delete, then `SELECT * FROM students ORDER BY student_id DESC LIMIT 1;` and `SELECT * FROM audit_log ORDER BY audit_id DESC LIMIT 3;` |
 | "Show the roles" | Sign out; log in as `meera`; show the smaller menu; open `/inspector` (403) |
 | "Show the passwords are hashed" | `SELECT username, LEFT(password_hash,7) FROM users LIMIT 3;` |
-| "Show the graph" | Graph page; or Neo4j Browser `http://localhost:7475` |
+| "Show the graph" | Graph page; or Neo4j Browser `http://localhost:7475` (Connection URL `localhost:7688`) |
 | "Show Cypher" | `MATCH (s:Student {name:'Meera Nair'})-[:HAS_SKILL]->(k:Skill) RETURN s,k` ; `MATCH p=(s:Student)-[:APPLIED_TO]->(j:Job)<-[:POSTED]-(c:Company) RETURN p LIMIT 25` ; `MATCH (s)-[r:PLACED_AT]->(c) RETURN s.name, c.name, r.package` |
 | "Show the tests" | `npm test` (or open `docs/test-results/latest.txt`) |
 | "Show no hard-coded passwords" | open `.env.example` (placeholders) and `lib/env.js`; GitHub has no `.env` |

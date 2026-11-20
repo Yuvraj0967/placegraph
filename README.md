@@ -72,7 +72,7 @@ Direct access (replace the password with `MYSQL_ROOT_PASSWORD` from `.env`):
 docker exec -it -e MYSQL_PWD=YOUR_ROOT_PASSWORD placegraph-mysql mysql -uroot placegraph
 ```
 
-Neo4j Browser: http://localhost:7475 (user `neo4j`, password `NEO4J_PASSWORD` from `.env`), for example `MATCH (n) RETURN n LIMIT 80`.
+Neo4j Browser: http://localhost:7475. **In the connect box change the Connection URL from `localhost:7687` to `localhost:7688`**, then user `neo4j` and password `NEO4J_PASSWORD` from `.env`. Try `MATCH p=(s:Student)-[:APPLIED_TO]->(j:Job)<-[:POSTED]-(c:Company) RETURN p`.
 
 ## Rules enforced by the database
 

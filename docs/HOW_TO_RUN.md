@@ -85,7 +85,7 @@ Officers can add more usernames on the **Users** page (or with `npm run user:cre
 | Start the databases again | `docker compose start` (or `npm run db:up`) |
 | Check everything works | `npm run db:setup`, then `npm test` (38 tests should pass; the website must be running) |
 | Look inside MySQL | `docker exec -it -e MYSQL_PWD=YOUR_MYSQL_ROOT_PASSWORD placegraph-mysql mysql -uroot placegraph` then try `SHOW TABLES;` (the password is `MYSQL_ROOT_PASSWORD` in `.env`) |
-| Look at the graph | Open http://localhost:7475, user `neo4j`, password `NEO4J_PASSWORD` from `.env`, then run `MATCH (n) RETURN n LIMIT 80` |
+| Look at the graph | Open http://localhost:7475, **change the Connection URL to `localhost:7688`** (the box shows 7687 by default), user `neo4j`, password `NEO4J_PASSWORD` from `.env`, then run `MATCH (n) RETURN n LIMIT 80` |
 
 ## If something goes wrong
 
