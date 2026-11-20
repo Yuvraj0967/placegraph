@@ -8,6 +8,7 @@ export const useAuth = () => useContext(AuthContext);
 function LoginForm({ onLogin }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPw, setShowPw] = useState(false); // lets you see what is really in the box (browsers can autofill an old saved password)
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
 
@@ -35,8 +36,11 @@ function LoginForm({ onLogin }) {
         <input id="email" type="text" autoComplete="username" required value={email} onChange={(e) => setEmail(e.target.value)} />
         <div style={{ height: 12 }} />
         <label htmlFor="password">Password</label>
-        <input id="password" type="password" autoComplete="current-password" required value={password} onChange={(e) => setPassword(e.target.value)} />
-        <div style={{ height: 16 }} />
+        <input id="password" type={showPw ? 'text' : 'password'} autoComplete="current-password" required value={password} onChange={(e) => setPassword(e.target.value)} />
+        <label className="check" style={{ marginTop: 8 }}>
+          <input type="checkbox" id="showpw" checked={showPw} onChange={(e) => setShowPw(e.target.checked)} /> Show password
+        </label>
+        <div style={{ height: 12 }} />
         <button className="primary" disabled={busy}>{busy ? 'Signing in…' : 'Sign in'}</button>
         <p className="muted" style={{ fontSize: 12, marginBottom: 0 }}>Demo usernames: <code>officer</code>, <code>tpo</code>, or a student's first name such as <code>meera</code>. The passwords are in your private <code>.env</code> file (<code>DEMO_OFFICER_PASSWORD</code> / <code>DEMO_STUDENT_PASSWORD</code>).</p>
       </form>
